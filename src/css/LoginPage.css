@@ -1,0 +1,305 @@
+
+
+/* 전체 화면 스타일 설정 */
+.screen {
+  background-color: rgba(255, 255, 255, 1.0); /* 화면 배경을 흰색으로 설정 */
+  display: flex; /* 내부 요소를 플렉스 컨테이너로 설정 */
+  flex-direction: row; /* 수평 방향으로 배치 */
+  justify-content: center; /* 내부 요소를 중앙에 정렬 */
+  width: 100%; /* 전체 화면 너비를 채움 */
+  
+}
+
+/* 배경 그라데이션 설정 */
+.screen .div {
+  background: linear-gradient(180deg, rgb(197, 246, 234) 25%,
+                                      rgb(197, 246, 255) 85%); /* 위에서 아래로 색상이 점점 변하는 그라데이션 */
+  background-color: rgba(255, 255, 255, 1.0); /* 그라데이션이 적용되지 않을 경우 백업용 배경색 */
+  height: 1080px; /* 요소 높이 설정 */
+  position: relative; /* 부모 요소에 상대적인 위치 설정 */
+  width: 1920px; /* 요소 너비 설정 */
+}
+
+
+
+/* 중앙 컨텐츠 박스 */
+.screen .overlap {
+  background-color: #f1f1f1; /* 박스 배경색을 회색으로 설정 */
+  border-radius: 10px 0px 10px 10px; /* 좌상단 제외 모서리를 둥글게 설정 */
+  height: 524px; /* 박스 높이 설정 */
+  left: 200px; /* 왼쪽에서 200px 떨어진 위치에 설정 */
+  position: relative; /* 부모 요소에 상대적인 위치 설정 */
+  top: 100px; /* 위에서 떨어진 위치에 설정 */
+  width: 1020px; /* 박스 너비 설정 */
+}
+
+/* 첫 번째 텍스트 요소  회원가입*/
+.screen .text-wrapper {
+  color: #000000; /* 텍스트 색상을 검정으로 설정 */
+  font-family: "Inter-Bold", Helvetica; /* 폰트 설정 */
+  font-size: 12px; /* 텍스트 크기 설정 */
+  font-weight: 700; /* 텍스트 두께를 굵게 설정 */
+  left: 555px; /* 왼쪽에서 508px 떨어진 위치 */
+  letter-spacing: 0; /* 글자 간격 설정 */
+  line-height: normal; /* 텍스트의 줄 간격 설정 */
+  position: relative; /* 부모 요소에 상대적인 위치 */
+  top: 297px; /* 위에서 330px 떨어진 위치 */
+}
+
+/* 두 번째 텍스트 요소  아이디 찾기*/
+.screen .text-wrapper-2 {
+  color: #000000; /* 텍스트 색상 검정 */
+  font-family: "Inter-Bold", Helvetica; /* 폰트 설정 */
+  font-size: 12px; /* 텍스트 크기 */
+  font-weight: 700; /* 굵게 설정 */
+  left: 927px; /* 왼쪽에서 865px 떨어진 위치 */
+  letter-spacing: 0; /* 글자 간격 */
+  line-height: normal; /* 줄 간격 */
+  position: relative; /* 부모 요소에 상대적인 위치 */
+  top: 280px; /* 위에서 330px 떨어진 위치 */
+}
+
+/* 세 번째 텍스트 요소 비밀번호 찾기*/
+.screen .text-wrapper-3 {
+  color: #000000;
+  font-family: "Inter-Bold", Helvetica;
+  font-size: 12px;
+  font-weight: 700;
+  left: 915px;
+  letter-spacing: 0;
+  line-height: normal;
+  position: relative;
+  top: 285px;
+}
+
+/* 로고 이미지 스타일 설정 */
+.screen .pngtree-school-logo {
+  height: 440px; /* 이미지 높이 */
+  left: 35px; /* 왼쪽에서 떨어진 위치 */
+  object-fit: cover; /* 이미지가 박스 크기에 맞도록 자름 */
+  position: relative; /* 부모 요소에 상대적인 위치 */
+  top: 10px; /* 위에서 떨어진 위치 */
+  width: 442px; /* 이미지 너비 */
+}
+
+/* 버튼 컨테이너 */
+.screen .group {
+  height: 5px; /* 컨테이너 높이 */
+  left: 550px; /* 왼쪽에서 떨어진 위치 */
+  position: relative; /* 부모 요소에 상대적인 위치 */
+  top: 200px; /* 위에서 떨어진 위치 */
+  width: 182px; /* 컨테이너 너비 */
+}
+
+/* 버튼 배경 실질적 높이너비 지정*/
+.screen .overlap-group {
+  background-color: skyblue; /* 버튼 배경색 하늘색 */
+  border-radius: 7px; /* 모서리를 둥글게 설정 */
+  height: 50px; /* 버튼 높이 */
+  position: relative; /* 부모 요소에 상대적인 위치 */
+  width: 442px; /* 버튼 너비 */
+   top: -300px;/* 위에서  떨어진 위치 */
+}
+
+/* 아이디 입력 영역ㅍ너비 높이 수정 */
+.screen .overlap-wrapper {
+  height: 40px; /* 입력 영역 높이 */
+  left: 550px; /* 왼쪽에서 490px 떨어진 위치 */
+  position: relative; /* 부모 요소에 상대적인 위치 */
+  top: -20px; /* 위에서  떨어진 위치 */
+  width: 444px; /* 입력 영역 너비 */
+}
+
+/* 아이디 입력 박스 */
+.screen .div-wrapper {
+  background-color: white; /* 배경색 흰색 */
+  border-radius: 5px; /* 모서리 둥글게 */
+  height: 50px; /* 높이 */
+  position: relative; /* 부모 요소에 상대적인 위치 */
+  width: 442px; /* 너비 */
+  top : -300px;
+
+}
+
+/* 주요 텍스트             로그인*/
+.screen .text-wrapper-4 {
+  color: #000000;
+  font-family: "Inter-Bold", Helvetica;
+  font-size: 48px; /* 텍스트 크기 */
+  font-weight: 700;
+  left: 150px;
+  letter-spacing: 0;
+  line-height: normal;
+  position: relative;
+  top: -300px;
+  width: 200px;
+}
+
+/* 아이디 라벨 텍스트 */
+.screen .text-wrapper-5 {
+  color: #a4a4a4;
+  font-family: "Inter-Bold", Helvetica;
+  font-size: 16px;
+  font-weight: 700;
+  left: 18px;
+  letter-spacing: 0;
+  line-height: normal;
+  position: relative;
+  top: 10px;
+  white-space: nowrap; /* 텍스트 줄바꿈 방지 */
+}
+
+/* 비밀번호 입력 영역 높이 너비 수정하는데*/
+.screen .overlap-group-wrapper {
+  height: 50px;
+  left: 550px;
+  position: relative;
+  top: -0px;
+  width: 444px;
+}
+
+/* 비밀번호 라벨 텍스트 */
+.screen .text-wrapper-6 {
+  color: #a4a4a4;
+  font-family: "Inter-Bold", Helvetica;
+  font-size: 16px;
+  font-weight: 700;
+  left: 14px;
+  letter-spacing: 0;
+  line-height: normal;
+  position: relative;
+  top: 11px;
+  white-space: nowrap;
+}
+
+/* 비밀번호 입력 박스 */
+.screen .group-2 {
+  height: 50px;
+  left: 550px;
+  position: relative;
+  top: -200px;
+  width: 444px;
+}
+
+/* 버튼 배경*/
+.screen .overlap-2 {
+  background-color: skyblue;
+  border-radius: 5px;
+  height: 50px;
+  position: relative;
+  width: 442px;
+  top: 70;
+}
+
+/* 버튼 텍스트 */
+.screen .text-wrapper-7 {
+  color: #000000;
+  font-family: "Inter-Bold", Helvetica;
+  font-size: 16px;
+  font-weight: 700;
+  left: 195px;
+  letter-spacing: 0;
+  line-height: normal;
+  position: relative;
+  top: 23px;
+  white-space: nowrap;
+}
+
+/* 학생 그룹 컨테이너 */
+.screen .group-3 {
+  height: 131px;          /* 그룹 컨테이너의 높이를 131px로 설정 */
+  left: 1215px;           /* 좌측에서 1372px 떨어진 위치로 설정 */
+  position: relative;     /* 상대 위치를 기준으로 배치하여 상위 요소에 영향을 받음 */
+  top: -424px;             /* 상단에서 241px 떨어진 위치로 설정 */
+  width: 133px;           /* 그룹 컨테이너의 너비를 133px로 설정 */
+}
+
+/* 학생 그룹 배경 */
+.screen .overlap-3 {
+  background-color: #bee7e9; /* 배경색을 연한 하늘색(#bee7e9)으로 설정 */
+  border-radius: 0px 10px 0px 0px; /* 우측 상단 모서리만 10px의 둥근 테두리를 적용 */
+  height: 131px;           /* 배경 높이를 131px로 설정 */
+  position: relative;      /* 상대 위치 기준으로 배치 */
+  width: 131px;            /* 배경 너비를 131px로 설정 */
+  top: 240;               /* 상단에서 -200px 위로 위치 조정 */
+}
+
+/* 학생 라벨 텍스트 */
+.screen .text-wrapper-8 { 
+  color: #000000;          /* 텍스트 색상을 검은색으로 설정 */
+  font-family: "Inter-Bold", Helvetica; /* 글꼴을 Inter-Bold와 Helvetica로 설정 */
+  font-size: 36px;         /* 텍스트 크기를 36px로 설정 */
+  font-weight: 700;        /* 글꼴 두께를 700으로 설정 (굵게) */
+  left: 32px;              /* 좌측에서 32px 떨어진 위치로 설정 */
+  letter-spacing: 0;       /* 글자 간격을 기본값으로 설정 */
+  line-height: normal;     /* 행 간격을 기본값으로 설정 */
+  position: relative;      /* 상대 위치 기준으로 배치 */
+  top: 40px;             /* 상단에서 -428px 위로 위치 조정 */
+}
+
+/* 학부모 그룹 컨테이너 */
+.screen .group-4 {
+  height: 131px;          /* 그룹 컨테이너의 높이를 131px로 설정 */
+  left: 1215px;           /* 좌측에서 1372px 떨어진 위치로 설정 */
+  position: relative;     /* 상대 위치 기준으로 배치 */
+  top: -424px;             /* 상단에서 372px 떨어진 위치로 설정 */
+  width: 133px;           /* 그룹 컨테이너의 너비를 133px로 설정 */
+}
+
+/* 학부모 그룹 배경 */
+.screen .overlap-4 {
+  background-color: #b0e0e6; /* 배경색을 연한 청록색(#b0e0e6)으로 설정 */
+  height: 131px;           /* 배경 높이를 131px로 설정 */
+  position: relative;      /* 상대 위치 기준으로 배치 */
+  width: 131px;            /* 배경 너비를 131px로 설정 */
+}
+
+/* 교사 그룹 컨테이너 */
+.screen .group-5 {
+  height: 131px;          /* 그룹 컨테이너의 높이를 131px로 설정 */
+  left: 1215px;           /* 좌측에서 1372px 떨어진 위치로 설정 */
+  position: relative;     /* 상대 위치 기준으로 배치 */
+  top: -424px;             /* 상단에서 503px 떨어진 위치로 설정 */
+  width: 133px;           /* 그룹 컨테이너의 너비를 133px로 설정 */
+}
+
+/* 교사 그룹 배경 */
+.screen .overlap-5 {
+  background-color: #a1cfdf; /* 배경색을 연한 파란색(#a1cfdf)으로 설정 */
+  height: 131px;           /* 배경 높이를 131px로 설정 */
+  position: relative;      /* 상대 위치 기준으로 배치 */
+  width: 131px;            /* 배경 너비를 131px로 설정 */
+}
+
+/* 학부모 라벨 텍스트 */
+.screen .text-wrapper-9 {
+  color: #000000;          /* 텍스트 색상을 검은색으로 설정 */
+  font-family: "Inter-Bold", Helvetica; /* 글꼴을 Inter-Bold와 Helvetica로 설정 */
+  font-size: 36px;         /* 텍스트 크기를 36px로 설정 */
+  font-weight: 700;        /* 글꼴 두께를 700으로 설정 (굵게) */
+  left: 10px;              /* 좌측에서 16px 떨어진 위치로 설정 */
+  letter-spacing: 0;       /* 글자 간격을 기본값으로 설정 */
+  line-height: normal;     /* 행 간격을 기본값으로 설정 */
+  position: relative;      /* 상대 위치 기준으로 배치 */
+  top: 40px;             /* 상단에서 -484px 위로 위치 조정 */
+}
+
+/* 관리자 그룹 컨테이너 */
+.screen .group-6 {
+  height: 131px;          /* 그룹 컨테이너의 높이를 131px로 설정 */
+  left: 1215px;           /* 좌측에서 1372px 떨어진 위치로 설정 */
+  position: relative;     /* 상대 위치 기준으로 배치 */
+  top: -424px;             /* 상단에서 634px 떨어진 위치로 설정 */
+  width: 133px;           /* 그룹 컨테이너의 너비를 133px로 설정 */
+}
+
+/* 관리자 그룹 배경 */
+.screen .overlap-6 {
+  background-color: #89cff0; /* 배경색을 연한 하늘색(#89cff0)으로 설정 */
+  border-radius: 0px 0px 10px 0px; /* 좌측 하단 모서리만 10px의 둥근 테두리를 적용 */
+  height: 131px;           /* 배경 높이를 131px로 설정 */
+  position: relative;      /* 상대 위치 기준으로 배치 */
+  width: 131px;            /* 배경 너비를 131px로 설정 */
+}
+
+
