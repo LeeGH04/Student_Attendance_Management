@@ -1,71 +1,54 @@
-import React from 'react';
+import React, { useState } from 'react';
 import loginImage from '../images/loginp.png'; // 로그인 이미지 경로 확인
 import '../css/LoginPage.css'; // CSS 경로 확인
 
 const LoginPage = () => {
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
+
+  const handleLogin = () => {
+    // 로그인 처리 로직 (예: API 호출)
+    console.log('아이디:', username, '비밀번호:', password);
+  };
+
+  const handlePasswordReset = () => {
+    // 비밀번호 찾기 처리 로직
+    console.log('비밀번호 찾기 클릭');
+  };
+
   return (
     <div className="screen">
-      <div className="div">
-        <div className="overlap">
-          <div className="text-wrapper">회원가입</div>
-          <div className="text-wrapper-2">아이디 찾기</div>
-          <div className="text-wrapper-3">비밀번호 찾기</div>
-
-          <img
-            className="pngtree-school-logo"
-            alt="Login Image"
-            src={loginImage} // 이미지 경로
+      <div className="login-container">
+        <div className="text-wrapper">로그인</div>
+        
+        <div className="input-group">
+          <label className="label">학번</label>
+          <input
+            type="text"
+            className="input"
+            placeholder="아이디를 입력하세요"
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
           />
-
-          {/* 추가적인 UI 구성 요소 */}
-          <div className="group">
-            <div className="overlap-group">
-              <div className="text-wrapper-4">로그인</div>
-            </div>
-          </div>
-
-          <div className="overlap-wrapper">
-            <div className="div-wrapper">
-              <div className="text-wrapper-5">아이디</div>
-            </div>
-          </div>
-
-          <div className="overlap-group-wrapper">
-            <div className="div-wrapper">
-              <div className="text-wrapper-6">비밀번호</div>
-            </div>
-          </div>
-
-          <div className="group-2">
-            <div className="overlap-2">
-              <div className="text-wrapper-7">LOGIN</div>
-            </div>
-          </div>
         </div>
 
-        {/* 역할 선택 버튼 */}
-        <div className="group-3">
-          <div className="overlap-3">
-            <div className="text-wrapper-8">학생</div>
-          </div>
+        <div className="input-group">
+          <label className="label">비밀번호</label>
+          <input
+            type="password"
+            className="input"
+            placeholder="비밀번호를 입력하세요"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+          />
         </div>
 
-        <div className="group-4">
-          <div className="overlap-4">
-            <div className="text-wrapper-8">교수</div>
-          </div>
+        <div className="login-button" onClick={handleLogin} style={{ cursor: 'pointer' }}>
+          로그인
         </div>
 
-        <div className="group-5">
-          <div className="overlap-5">
-            <div className="text-wrapper-9">학부모</div>
-          </div>
-        </div>
-
-        <div className="group-6">
-          <div className="overlap-6">
-            <div className="text-wrapper-9">관리자</div>
-          </div>
+        <div className="password-reset" onClick={handlePasswordReset} style={{ cursor: 'pointer' }}>
+          비밀번호 찾기
         </div>
       </div>
     </div>
