@@ -1,29 +1,30 @@
+/* SideBar.css */
+
+/* 사이드바 스타일 */
 .sidebar {
     width: 327px;
-    height: 1080px;
-    flex-shrink: 0;
+    height: 100vh;  /* 전체 화면 높이 */
+    position: fixed;  /* 좌측 고정 */
     background: #FFF;
+    top: 0;
+    left: 0;
+    z-index: 1000;  /* 다른 요소들 위에 놓이도록 설정 */
+    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);  /* 사이드바 그림자 */
 }
 
 .sidebar h2 {
     color: #000;
-    font-family: Inter;
+    font-family: Inter, sans-serif;
     font-size: 48px;
-    font-style: normal;
     font-weight: 700;
-    line-height: normal;
-
-    margin-left: 40px;    /* 왼쪽 여백 추가 */
-    /* 또는 */
-    margin-top: 35px;   /* 오른쪽 여백 추가 */
-    /* 또는 */
-    margin: 0 auto;       /* 가운데 정렬을 위한 자동 여백 */
+    margin: 35px 0 15px 40px;  /* 왼쪽, 위쪽 여백 설정 */
 }
 
 .sidebar ul {
     display: flex;
     flex-direction: column;
     gap: 45px;
+    margin-top: 20px;  /* 상단 여백 추가 */
 }
 
 .sidebar button {
@@ -34,6 +35,8 @@
     padding: 0.5rem 1rem;
     color: rgb(209, 213, 219);
     border-radius: 0.5rem;
+    border: none;
+    background: none;
 }
 
 .sidebar button:hover {
@@ -43,4 +46,11 @@
 .sidebar .icon {
     width: 1.25rem;
     height: 1.25rem;
+}
+
+/* 사이드바가 끝난 후 메인 콘텐츠 스타일 */
+.main-content {
+    margin-left: 327px;  /* 사이드바 너비만큼 여백을 줌 */
+    padding: 20px;
+    flex-grow: 1;
 }

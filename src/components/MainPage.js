@@ -1,17 +1,16 @@
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
-import { Home, Users, Settings, LogOut } from 'lucide-react';
-import '../css/Mainpage.css';
+import SideBar from './SideBar';  // SideBar 컴포넌트를 임포트
 
-const SideBar = () => {
-    const navigate = useNavigate();
-
-    const handleLogout = () => {
-        localStorage.removeItem('isLoggedIn');
-        navigate('/login');
-    };
-
-
+const MainPage = () => {
+    return (
+        <div className="main-page">
+            <SideBar />  {/* 사이드바 렌더링 */}
+            <div className="content">
+                <h1>메인 페이지 콘텐츠</h1>
+                {/* 여기에 메인 페이지의 실제 콘텐츠를 추가 */}
+            </div>
+        </div>
+    );
 };
 
-export default SideBar;
+export default MainPage;
