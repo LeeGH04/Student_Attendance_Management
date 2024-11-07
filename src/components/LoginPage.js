@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import '../css/LoginPage.css';
+import loginImage from '../images/loginp.png';
 
 const LoginPage = () => {
   const [id, setId] = useState('');  // 학번을 저장
@@ -63,39 +64,47 @@ const LoginPage = () => {
   return (
     <div className="screen">
       <div className="login-container">
-        <div className="text-wrapper">로그인</div>
-        <form onSubmit={handleLogin}>
-          <div className="input-group">
-            <label className="label">학번</label>
-            <input
-              type="text"
-              className="input"
-              placeholder="학번을 입력하세요"
-              value={id}
-              onChange={(e) => setId(e.target.value)}
-            />
+        <div className="login-icon-section">
+          {/* 여기에 큰 아이콘 */}
+          <img src={loginImage} alt="login icon" />
+          {/*<YourIcon className="w-64 h-64"/> /!* 아이콘 크기 예시 *!/*/}
+        </div>
+        <div className="login-form-section">
+          <div className="text-wrapper">로그인</div>
+          <form onSubmit={handleLogin}>
+            <div className="input-group">
+              <label className="label">학번</label>
+              <input
+                  type="text"
+                  className="input"
+                  placeholder="학번을 입력하세요"
+                  value={id}
+                  onChange={(e) => setId(e.target.value)}
+              />
+            </div>
+            <div className="input-group">
+              <label className="label">비밀번호</label>
+              <input
+                  type="password"
+                  className="input"
+                  placeholder="비밀번호를 입력하세요"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+              />
+            </div>
+            {error && <div className="error-message">{error}</div>}
+            <button type="submit" className="login-button">
+              로그인
+            </button>
+          </form>
+          <div className="password-reset" style={{cursor: 'pointer'}}>
+            비밀번호 찾기
           </div>
-          <div className="input-group">
-            <label className="label">비밀번호</label>
-            <input
-              type="password"
-              className="input"
-              placeholder="비밀번호를 입력하세요"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-            />
-          </div>
-          {error && <div className="error-message">{error}</div>}
-          <button type="submit" className="login-button">
-            로그인
-          </button>
-        </form>
-        <div className="password-reset" style={{ cursor: 'pointer' }}>
-          비밀번호 찾기
         </div>
       </div>
-    </div>
-  );
-};
 
-export default LoginPage;
+      </div>
+      );
+      };
+
+      export default LoginPage;
