@@ -1,0 +1,28 @@
+// users 테이블 생성
+CREATE TABLE users (
+    id INT NOT NULL PRIMARY KEY,
+    name VARCHAR(100) NOT NULL,
+    password VARCHAR(255) NOT NULL,
+    email VARCHAR(100) DEFAULT NULL,
+    phone_number VARCHAR(15) DEFAULT NULL,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    role ENUM('student', 'professor', 'admin', 'parent') NOT NULL DEFAULT 'student'
+);
+
+// 데이터 삽입
+
+INSERT INTO users (id, name, password, email, phone_number, role)
+VALUES (202344024, '김민수', 'jj021204!@', '202344024@itc.ac.kr', '010-2925-7292', 'student');
+
+INSERT INTO users (id, name, password, email, phone_number, role)
+VALUES (202300001, '김교수', 'jj021204!@', '202300001@itc.ac.kr', '010-1234-1234', 'professor');
+
+INSERT INTO users (id, name, password, email, phone_number, role)
+VALUES (202300000, '관리자', 'admin', '202300000@itc.ac.kr', '010-0000-0000', 'admin');
+
+INSERT INTO users (id, name, password, email, phone_number, role)
+VALUES (2023440241, '김부모', 'jj021204!@', '2023440241@itc.ac.kr', '010-1111-1111', 'parent');
+
+// 테이블 확인
+
+select * from users;
