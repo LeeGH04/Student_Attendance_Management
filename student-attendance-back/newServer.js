@@ -26,28 +26,6 @@ const dbPool = mysql.createPool({
     database: process.env.DB_NAME || 'Attendance',
 });
 
-// 회원가입 라우트 (학번으로 가입)
-app.post('/signup', async (req, res) => {
-    const { id, password, role } = req.body;  // role도 추가받아야 할 수 있음
-
-    try {
-        // 사용자 정보를 users 테이블에 삽입 (비밀번호 해싱 없이)
-        const [result] = await dbPool.execute(
-            'INSERT INTO users (id, password, role) VALUES (?, ?, ?)', 
-            [id, password, role]  // id, password, role 삽입
-        );
-
-        if (result.affectedRows > 0) {
-            res.json({ success: true, message: '회원가입 성공!' });
-        } else {
-            res.status(500).json({ success: false, message: '회원가입에 실패했습니다.' });
-        }
-    } catch (error) {
-        console.error('회원가입 중 오류 발생:', error);
-        res.status(500).json({ success: false, message: '회원가입 중 오류가 발생했습니다.' });
-    }
-});
-
 // 로그인 라우트 (학번으로 로그인)
 app.post('/login', async (req, res) => {
     const { id, password } = req.body;  // email을 student_id로 변경
