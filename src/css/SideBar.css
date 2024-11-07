@@ -1,0 +1,62 @@
+/* 사이드바 스타일 */
+.sidebar {
+    width: 280px;
+    height: 100vh;
+    position: fixed;
+    background: #FFF;
+    top: 0;
+    left: 0;
+    z-index: 1000;
+    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+}
+
+/* 사이드바 제목 스타일 */
+.sidebar h2 {
+    color: #000;
+    font-family: Inter, sans-serif;
+    font-size: 24px;
+    font-weight: 700;
+    margin-bottom: 20px;
+}
+
+/* 카테고리 제목 스타일 */
+.category {
+    color: #333;
+    font-size: 16px;
+    font-weight: 700;
+    margin-top: 20px;
+    margin-bottom: 10px;
+}
+
+/* 버튼 스타일 */
+.sidebar ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.sidebar button {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.5rem 1rem;
+    color: #333;
+    border-radius: 0.5rem;
+    border: none;
+    background: none;
+    font-size: 14px;
+    font-weight: 500;
+    transition: background 0.3s;
+}
+
+.sidebar button:hover {
+    background-color: #f0f0f0;
+}
+
+.sidebar .icon {
+    width: 20px;
+    height: 20px;
+    color: #666;
+}

@@ -1,0 +1,114 @@
+/* AttendancePage.css */
+
+/* 전체 컨테이너 */
+.attendance-container {
+    padding: 20px;
+    margin-left: 200px; /* 사이드바 너비만큼 여백 추가 */
+    display: flex;
+    justify-content: space-between; /* 왼쪽과 오른쪽 영역을 나누기 */
+}
+
+/* 왼쪽 섹션 */
+.left-section {
+    width: 48%; /* 왼쪽 영역 크기 */
+    display: flex;
+    flex-direction: column; /* 세로로 쌓이도록 설정 */
+    gap: 20px; /* 각 항목 간의 간격 */
+    margin-left: -70px; /* 왼쪽으로 더 옮김 */
+}
+
+/* 오른쪽 섹션 */
+.right-section {
+    width: 48%; /* 오른쪽 영역의 크기 */
+    display: flex;
+    flex-direction: column; /* 세로로 쌓이도록 설정 */
+    gap: 20px;
+}
+
+/* 현재 수업 섹션 */
+.current-class h2 {
+    font-size: 24px;
+    margin-bottom: 10px;
+}
+
+.class-info-box {
+    padding: 20px;
+    background: white;
+    border-radius: 10px;
+    border: 2px solid black;
+    text-align: center;
+}
+
+/* 출석 코드 입력 섹션 */
+.attendance-code h2 {
+    font-size: 24px;
+    margin-bottom: 10px;
+}
+
+.attendance-input {
+    padding: 10px;
+    font-size: 16px;
+    margin-bottom: 20px;
+    width: 100%;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    text-align: center;
+}
+
+button {
+    padding: 10px 20px;
+    font-size: 16px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: #45a049;
+}
+
+/* 오늘의 시간표 섹션 (오른쪽) */
+.today-timetable h2 {
+    font-size: 24px;
+    margin-bottom: 10px;
+}
+
+.timetable-box {
+    padding: 20px;
+    background: white;
+    border-radius: 10px;
+    border: 2px solid black;
+    text-align: center;
+    flex-grow: 1; /* 공간이 남으면 채우도록 설정 */
+    height: auto; /* 높이를 자동으로 설정 */
+    margin-bottom: 10px;
+}
+
+/* 시간표 리스트 */
+.timetable-list {
+    list-style-type: none;
+    padding: 0;
+}
+
+.timetable-item {
+    padding: 15px;
+    background-color: #f4f4f4;
+    border-radius: 10px;
+    border: 1px solid #ccc;
+    margin-bottom: 10px;
+    display: flex;
+    justify-content: space-between;
+}
+
+.timetable-item p {
+    font-size: 18px;
+    margin: 0;
+}
+
+/* 시간표 항목 레이아웃 */
+.timetable-item span {
+    font-weight: bold;
+    color: #333;
+}
