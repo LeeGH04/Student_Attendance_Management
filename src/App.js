@@ -22,7 +22,9 @@ function App() {
                     path="/student-main"
                     element={
                         <PrivateRoute>
-                            <StudentMain />
+
+                                <StudentMain />
+
                         </PrivateRoute>
                     }
                 />

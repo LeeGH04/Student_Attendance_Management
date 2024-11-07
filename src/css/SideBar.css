@@ -1,6 +1,6 @@
 /* 사이드바 스타일 */
 .sidebar {
-    width: 280px;
+    width: 327px;
     height: 100vh;
     position: fixed;
     background: #FFF;
@@ -8,25 +8,55 @@
     left: 0;
     z-index: 1000;
     box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
-    padding: 20px;
 }
 
 /* 사이드바 제목 스타일 */
 .sidebar h2 {
     color: #000;
-    font-family: Inter, sans-serif;
-    font-size: 24px;
+    font-family: Inter;
+    font-size: 48px;
+    font-style: normal;
     font-weight: 700;
-    margin-bottom: 20px;
+    line-height: normal;
+    margin-left: 30px;
 }
 
 /* 카테고리 제목 스타일 */
-.category {
-    color: #333;
-    font-size: 16px;
+.sidebar-category {
+    color: #7D7D7D;
+    font-family: Inter;
+    font-size: 24px;
+    font-style: normal;
     font-weight: 700;
+    line-height: normal;
+    margin-top: 60px;
+    margin-left: 40px;
+}
+.sidebar-menu {
+    color: #000;
+    font-family: Inter;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 700;
+    line-height: normal;
     margin-top: 20px;
-    margin-bottom: 10px;
+
+}
+
+.logout-menu{
+
+        position: absolute;
+        bottom: 20px;
+        left: 20px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+
+}
+.logout-icon{
+    width: 20px;
+    height: 20px;
+    color: #666;
 }
 
 /* 버튼 스타일 */
@@ -34,6 +64,7 @@
     list-style: none;
     padding: 0;
     margin: 0;
+    margin-left: 30px;
 }
 
 .sidebar button {
@@ -56,6 +87,7 @@
 }
 
 .sidebar .icon {
+    margin-top: 15px;
     width: 20px;
     height: 20px;
     color: #666;

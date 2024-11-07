@@ -10,11 +10,20 @@ app.use(cors());
 app.use(express.json());
 
 // MySQL 데이터베이스 연결 풀 설정
+//민수형
+// const dbPool = mysql.createPool({
+//     host: process.env.DB_HOST || 'localhost',
+//     user: process.env.DB_USER || 'root',
+//     password: process.env.DB_PASSWORD || 'jj021204!@',
+//     database: process.env.DB_NAME || 'eundata',
+// });
+
+//건휘
 const dbPool = mysql.createPool({
     host: process.env.DB_HOST || 'localhost',
-    user: process.env.DB_USER || 'root',
-    password: process.env.DB_PASSWORD || 'jj021204!@',
-    database: process.env.DB_NAME || 'eundata',
+    user: process.env.DB_USER || 'LeeGH04',
+    password: process.env.DB_PASSWORD || '0004',
+    database: process.env.DB_NAME || 'Attendance',
 });
 
 // 회원가입 라우트 (학번으로 가입)
