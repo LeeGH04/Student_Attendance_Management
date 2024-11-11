@@ -11,6 +11,8 @@ const SideBar = () => {
         navigate('/login'); // 로그아웃 후 로그인 페이지로 이동
     };
 
+    
+
     return (
         <div className="sidebar">
             <h2>ㅇㅇ 학교</h2>
@@ -31,7 +33,7 @@ const SideBar = () => {
                         </button>
                     </li>
                     <li>
-                        <button onClick={() => navigate('/notifications')}>
+                        <button onClick={() => navigate('/NotificationsPage')}>
                             <Settings className="icon" />
                             <span className="sidebar-menu">알림 확인</span>
                         </button>
