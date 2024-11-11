@@ -1,0 +1,68 @@
+/* 전체 레이아웃 설정 */
+.main-container {
+    display: flex; /* 사이드바와 본문 콘텐츠를 나란히 배치 */
+  }
+  
+  /* 메인 콘텐츠 영역 */
+  .content-container {
+    margin-left: 500px; /* 사이드바 너비만큼 여백을 주어 콘텐츠가 겹치지 않도록 설정 */
+    padding: 20px;
+    width: calc(100% - 0px); /* 사이드바 너비를 빼고 나머지 부분을 콘텐츠 영역으로 설정 */
+    background-color: #f7f7f7; /* 콘텐츠 배경색 설정 */
+  }
+  
+  /* 타이틀 영역 */
+  .header .title {
+    font-size: 48px;
+    font-weight: 700;
+    color: black;
+    margin-bottom: 20px; /* 타이틀 아래 여백 */
+  }
+  
+  /* 알림 리스트 및 상단 섹션 */
+  .notifications-section {
+    padding: 30px;
+    background-color: white;
+    border-radius: 10px;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1); /* 상자 그림자 추가 */
+  }
+  
+  /* 알림 스타일 */
+  .notification-item {
+    padding: 15px;
+    margin-bottom: 10px;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    cursor: pointer;
+  }
+  
+  .notification-item:hover {
+    background-color: #e0e0e0;
+  }
+  
+  .notification-item.read {
+    background-color: #f0f0f0; /* 읽은 알림의 배경색 */
+  }
+  
+  .notification-header {
+    font-weight: bold;
+  }
+  
+  .notification-body {
+    color: #555;
+  }
+  
+  /* 알림 권한 요청 버튼 */
+  .notification-permission-button {
+    padding: 10px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+  
+  .notification-permission-button:hover {
+    background-color: #45a049;
+  }

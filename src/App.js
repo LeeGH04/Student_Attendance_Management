@@ -7,8 +7,10 @@ import AttendancePage from './components/AttendancePage';
 import ProfessorMain from './components/ProfessorMain';
 import AdminMain from './components/AdminMain';
 import ParentMain from './components/ParentMain';
+import AnnouncementPage from './components/AnnouncementsPage';  // 예시로 추가한 공지사항 페이지
+import NotificationsPage from './components/NotificationsPage';  // 알림 페이지 임포트 추가
 import PrivateRoute from './components/PrivateRoute';
-import SideBar from './components/SideBar';
+import ProfileManagement from './components/ProfileManagement';
 import './App.css';
 
 function App() {
@@ -22,9 +24,7 @@ function App() {
                     path="/student-main"
                     element={
                         <PrivateRoute>
-
                                 <StudentMain />
-
                         </PrivateRoute>
                     }
                 />

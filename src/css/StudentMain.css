@@ -15,6 +15,7 @@
     width: calc(100% - 327px);  /* 사이드바 너비만큼 빼기 */
     min-height: 90vh;  /* 최소 높이를 화면 높이로 설정 */
     overflow-y: auto;
+    background-color: #FFFFFF;
 }
 
 /* 타이틀 영역 */

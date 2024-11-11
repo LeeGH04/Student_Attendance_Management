@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import '../css/AttendancePage.css'; // CSS 파일 임포트
+//
 
 const AttendancePage = () => {
     const [attendanceCode, setAttendanceCode] = useState('');

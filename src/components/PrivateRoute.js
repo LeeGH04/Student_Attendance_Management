@@ -1,7 +1,7 @@
 import React from 'react';
 import { Navigate } from 'react-router-dom';
 import SideBar from './SideBar';
-
+//
 const PrivateRoute = ({ children }) => {
     const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
     const role = localStorage.getItem('userRole'); // 사용자 권한 가져오기
