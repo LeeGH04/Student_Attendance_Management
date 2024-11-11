@@ -1,13 +1,13 @@
 import React from 'react';
-import SideBar from './SideBar';
-import '../css/AnnouncementsPage.module.css'; // CSS 파일 import
+import '../css/AnnouncementsPage.css'; // CSS 파일 import
+import '../css/Base.css';
 
 const AnnouncementsPage = () => {
   return (
     <div className="main-container">
-      <SideBar />
+
       <div className="content-container">
-        <h1 className="announcement-title">공지사항</h1>
+        <h1 className="title">공지사항</h1>
         <div className="search-section">
           <select className="filter-dropdown">
             <option>제목</option>

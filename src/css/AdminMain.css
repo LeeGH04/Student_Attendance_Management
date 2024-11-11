@@ -1,21 +1,21 @@
 /* 전체 레이아웃 설정 */
-.main-container {
-    display: flex;
-}
+/*.main-container {*/
+/*    display: flex;*/
+/*}*/
 
 /* 메인 콘텐츠 영역 */
-.content-container {
-    margin-left: 150px;  /* 사이드바 너비만큼 여백 */
-    padding: 20px;
-    width: calc(100% - 280px);  /* 사이드바 너비만큼 빼기 */
-}
+/*.content-container {*/
+/*    margin-left: 150px;  !* 사이드바 너비만큼 여백 *!*/
+/*    padding: 20px;*/
+/*    width: calc(100% - 280px);  !* 사이드바 너비만큼 빼기 *!*/
+/*}*/
 
 /* 타이틀 영역 */
-.header .title {
-    font-size: 48px;
-    font-weight: 700;
-    color: black;
-}
+/*.header .title {*/
+/*    font-size: 48px;*/
+/*    font-weight: 700;*/
+/*    color: black;*/
+/*}*/
 
 /* 통계 및 차트 영역 */
 .statistics-container {

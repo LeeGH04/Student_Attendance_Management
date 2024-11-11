@@ -3,15 +3,20 @@ import React from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import LoginPage from './components/LoginPage';
 import StudentMain from './components/StudentMain';
-import AttendancePage from './components/AttendancePage';
 import ProfessorMain from './components/ProfessorMain';
 import AdminMain from './components/AdminMain';
 import ParentMain from './components/ParentMain';
-import AnnouncementPage from './components/AnnouncementsPage';  // 예시로 추가한 공지사항 페이지
-import NotificationsPage from './components/NotificationsPage';  // 알림 페이지 임포트 추가
 import PrivateRoute from './components/PrivateRoute';
-import ProfileManagement from './components/ProfileManagement';
+import AnnouncementsPage from './components/AnnouncementsPage';  // 예시로 추가한 공지사항 페이지
+import AttendancePage from './components/AttendancePage';
+import AttendanceReportCreatePage from './components/AttendanceReportCreatePage';
+import AttendanceReportPage from './components/AttendanceReportPage';
+import NotificationsPage from './components/NotificationsPage';  // 알림 페이지 임포트 추가
+import ProfileManagementPage from './components/ProfileManagementPage';
+import UserManagementPage from './components/UserManagementPage';
+
 import './App.css';
+import AttendanceManagementPage from "./components/AttendanceManagementPage";
 
 function App() {
     return (
@@ -24,19 +29,11 @@ function App() {
                     path="/student-main"
                     element={
                         <PrivateRoute>
-                                <StudentMain />
+                            <StudentMain />
                         </PrivateRoute>
                     }
                 />
 
-                <Route
-                    path="/AttendancePage"
-                    element={
-                        <PrivateRoute>
-                            <AttendancePage />
-                        </PrivateRoute>
-                    }
-                />
 
                 <Route
                     path="/professor-main"
@@ -64,6 +61,80 @@ function App() {
                         </PrivateRoute>
                     }
                 />
+
+                <Route
+                    path="/AttendancePage"
+                    element={
+                        <PrivateRoute>
+                            <AttendancePage />
+                        </PrivateRoute>
+                    }
+                />
+
+                <Route
+                    path="/AnnouncementsPage"
+                    element={
+                        <PrivateRoute>
+                            <AnnouncementsPage />
+                        </PrivateRoute>
+                    }
+                />
+
+                <Route
+                    path="/NotificationsPage"
+                    element={
+                        <PrivateRoute>
+                            <NotificationsPage />
+                        </PrivateRoute>
+                    }
+                />
+
+                <Route
+                    path="/ProfileManagementPage"
+                    element={
+                        <PrivateRoute>
+                            <ProfileManagementPage />
+                        </PrivateRoute>
+                    }
+                />
+
+                <Route
+                    path="/UserManagementPage"
+                    element={
+                        <PrivateRoute>
+                            <UserManagementPage />
+                        </PrivateRoute>
+                    }
+                />
+
+                <Route
+                    path="/AttendanceReportCreatePage"
+                    element={
+                        <PrivateRoute>
+                            <AttendanceReportCreatePage />
+                        </PrivateRoute>
+                    }
+                />
+
+                <Route
+                    path="/AttendanceReportPage"
+                    element={
+                        <PrivateRoute>
+                            <AttendanceReportPage />
+                        </PrivateRoute>
+                    }
+                />
+
+                <Route
+                    path="/AttendanceManagementPage"
+                    element={
+                        <PrivateRoute>
+                            <AttendanceManagementPage />
+                        </PrivateRoute>
+                    }
+                />
+
+
 
                 <Route path="/" element={<Navigate to="/login" />} />
             </Routes>

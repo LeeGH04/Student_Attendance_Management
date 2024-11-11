@@ -18,12 +18,20 @@ app.use(express.json());
 //     database: process.env.DB_NAME || 'eundata',
 // });
 
+//은솔
+// const dbPool = mysql.createPool({
+//     host: process.env.DB_HOST || 'localhost',
+//     user: process.env.DB_USER || 'root',
+//     password: process.env.DB_PASSWORD || '8421choi@',
+//     database: process.env.DB_NAME || 'projsystem',
+// });
+
 //건휘
 const dbPool = mysql.createPool({
     host: process.env.DB_HOST || 'localhost',
-    user: process.env.DB_USER || 'root',
-    password: process.env.DB_PASSWORD || '8421choi@',
-    database: process.env.DB_NAME || 'projsystem',
+    user: process.env.DB_USER || 'LeeGH04',
+    password: process.env.DB_PASSWORD || '0004',
+    database: process.env.DB_NAME || 'Attendance',
 });
 
 // 로그인 라우트 (학번으로 로그인)

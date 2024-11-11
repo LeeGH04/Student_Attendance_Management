@@ -2,6 +2,7 @@
 import React from 'react';
 import SideBar from './SideBar';
 import '../css/StudentMain.css';
+import '../css/Base.css';
 
 const StudentMain = () => {
     return (

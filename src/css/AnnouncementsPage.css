@@ -1,16 +1,16 @@
 /* 전체 레이아웃 설정 */
-.main-container {
-    display: flex;
-}
+/*.main-container {*/
+/*    display: flex;*/
+/*}*/
 
 /* 메인 콘텐츠 영역 */
-.content-container {
-    margin-left: 150px;  /* 사이드바 너비만큼 여백 */
-    padding: 20px;
-    width: calc(100% - 280px);  /* 사이드바 너비만큼 빼기 */
-    background-color: #f8f9fa;
-    min-height: 100vh; /* Ensure it takes full height of the viewport */
-}
+/*.content-container {*/
+/*    margin-left: 150px;  !* 사이드바 너비만큼 여백 *!*/
+/*    padding: 20px;*/
+/*    width: calc(100% - 280px);  !* 사이드바 너비만큼 빼기 *!*/
+/*    background-color: #f8f9fa;*/
+/*    min-height: 100vh; !* Ensure it takes full height of the viewport *!*/
+/*}*/
 
 /* 타이틀 스타일 */
 .announcement-title {

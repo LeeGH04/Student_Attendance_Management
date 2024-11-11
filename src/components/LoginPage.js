@@ -3,6 +3,7 @@ import axios from 'axios';
 import {useNavigate} from 'react-router-dom';
 import '../css/LoginPage.css';
 import loginImage from '../images/loginp.png';
+import '../css/Base.css';
 //
 const LoginPage = () => {
     const [id, setId] = useState('');  // 학번을 저장

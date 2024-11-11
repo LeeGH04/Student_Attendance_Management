@@ -2,10 +2,14 @@
 
 /* 전체 컨테이너 */
 .attendance-container {
-    padding: 20px;
-    margin-left: 200px; /* 사이드바 너비만큼 여백 추가 */
+    /*padding: 20px;*/
+    margin-left: 70px; /* 사이드바 너비만큼 여백 추가 */
     display: flex;
     justify-content: space-between; /* 왼쪽과 오른쪽 영역을 나누기 */
+}
+/*그냥 공간 띄우기용 박스*/
+.box {
+    margin-top: 300px;
 }
 
 /* 왼쪽 섹션 */
@@ -19,6 +23,7 @@
 
 /* 오른쪽 섹션 */
 .right-section {
+    margin-top: 150px;
     width: 48%; /* 오른쪽 영역의 크기 */
     display: flex;
     flex-direction: column; /* 세로로 쌓이도록 설정 */

@@ -1,15 +1,31 @@
 /* 전체 레이아웃 설정 */
-.main-container {
-    display: flex;
-}
+/*.main-container {*/
+/*    display: flex;*/
+/*}*/
 
 /* 메인 콘텐츠 영역 */
-.profile-content-container {
-    margin-left: 150px;  /* 사이드바 너비만큼 여백 */
-    padding: 20px;
-    width: calc(100% - 280px);  /* 사이드바 너비만큼 빼기 */
-    background-color: #f8f9fa;
-    min-height: 100vh; /* Ensure it takes full height of the viewport */
+/*.profile-content-container {*/
+/*    margin-left: 150px;  !* 사이드바 너비만큼 여백 *!*/
+/*    padding: 20px;*/
+/*    width: calc(100% - 280px);  !* 사이드바 너비만큼 빼기 *!*/
+/*    background-color: #f8f9fa;*/
+/*    min-height: 100vh; !* Ensure it takes full height of the viewport *!*/
+/*}*/
+.left-section {
+    width: 48%; /* 왼쪽 영역 크기 */
+    display: flex;
+    flex-direction: column; /* 세로로 쌓이도록 설정 */
+    gap: 20px; /* 각 항목 간의 간격 */
+    margin-left: -70px; /* 왼쪽으로 더 옮김 */
+}
+
+/* 오른쪽 섹션 */
+.right-section {
+    margin-top: 150px;
+    width: 48%; /* 오른쪽 영역의 크기 */
+    display: flex;
+    flex-direction: column; /* 세로로 쌓이도록 설정 */
+    gap: 20px;
 }
 
 /* 타이틀 스타일 */

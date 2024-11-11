@@ -1,6 +1,7 @@
 import React from 'react';
 import { Navigate } from 'react-router-dom';
 import SideBar from './SideBar';
+import '../css/Base.css';
 //
 const PrivateRoute = ({ children }) => {
     const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
