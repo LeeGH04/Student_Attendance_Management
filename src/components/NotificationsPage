@@ -1,4 +1,3 @@
-import React, { useEffect } from "react";
 import '../css/NotificationsPage.css';
 
 export const Groups = () => {
