@@ -21,13 +21,9 @@ const NotificationsPage = () => {
       <div className="text-wrapper">알림</div>
 
       <div class="main-content">
-
-  <div class="right-container">
-    <div className="box"></div>
-  </div>
 </div>
 
-      {/* 리스트 테이블 */}
+      {/* 리스트 테이블gg */}
       <table className="notification-table">
         <thead className="first-line">
           <tr>
