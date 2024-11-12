@@ -1,5 +1,5 @@
 // src/App.js
-import React from 'react';
+import React, {useEffect} from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import LoginPage from './components/LoginPage';
 import StudentMain from './components/StudentMain';
@@ -19,6 +19,13 @@ import './App.css';
 import AttendanceManagementPage from "./components/AttendanceManagementPage";
 
 function App() {
+    useEffect(() => {
+        const isChrome = /Chrome/.test(navigator.userAgent) && /Google Inc/.test(navigator.vendor);
+        if (isChrome) {
+            document.body.style.zoom = "75%";
+        }
+    }, []);
+
     return (
         <BrowserRouter>
             <Routes>
