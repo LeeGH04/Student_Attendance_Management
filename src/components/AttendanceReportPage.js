@@ -1,9 +1,9 @@
 import React from 'react';
 import {BarChart, Bar, PieChart, Pie, XAxis, YAxis, CartesianGrid, Tooltip, Legend, Cell} from 'recharts';
-import '../css/AttendanceReportPage.css';
+import styles from '../css/AttendanceReportPage.module.css';  // 모듈 CSS로 변경
 import '../css/Base.css';
 
-const AttendanceManagementPage = () => {
+const AttendanceReportPage = () => {
     const attendanceData = [
         {courseName: "시스템 분석 설계", studentId: "202344029", studentName: "이건휘", attendance: 10, tardiness: 2, absence: 1},
         {courseName: "JAVA프로그래밍", studentId: "202344029", studentName: "이건휘", attendance: 9, tardiness: 3, absence: 0},
@@ -44,42 +44,39 @@ const AttendanceManagementPage = () => {
             <div className="content-container">
                 <h1 className="title">출석 보고서</h1>
 
-                <div className="attendance-report-page-container">
-                    <div className="attendance-report-page-left-section">
-
-                            <h1>상세 출결 현황</h1>
-                            <table className="attendance-table">
-                                <thead>
-                                <tr>
-                                    <th>강의명</th>
-                                    <th>학번</th>
-                                    <th>이름</th>
-                                    <th>출석</th>
-                                    <th>지각</th>
-                                    <th>결석</th>
+                <div className={styles.container}>
+                    <div className={styles.leftSection}>
+                        <h1>상세 출결 현황</h1>
+                        <table className={styles.attendanceTable}>
+                            <thead>
+                            <tr>
+                                <th>강의명</th>
+                                <th>학번</th>
+                                <th>이름</th>
+                                <th>출석</th>
+                                <th>지각</th>
+                                <th>결석</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {attendanceData.map((item, index) => (
+                                <tr key={index}>
+                                    <td>{item.courseName}</td>
+                                    <td>{item.studentId}</td>
+                                    <td>{item.studentName}</td>
+                                    <td>{item.attendance}</td>
+                                    <td>{item.tardiness}</td>
+                                    <td>{item.absence}</td>
                                 </tr>
-                                </thead>
-                                <tbody>
-                                {attendanceData.map((item, index) => (
-                                    <tr key={index}>
-                                        <td>{item.courseName}</td>
-                                        <td>{item.studentId}</td>
-                                        <td>{item.studentName}</td>
-                                        <td>{item.attendance}</td>
-                                        <td>{item.tardiness}</td>
-                                        <td>{item.absence}</td>
-                                    </tr>
-                                ))}
-                                </tbody>
-                            </table>
-
+                            ))}
+                            </tbody>
+                        </table>
                     </div>
-                    <div className="attendance-report-page-right-section">
-                    {/* 전체 출결 현황 (원형 그래프) */}
-                    <div className="chart-container">
-                        <h2>전체 출결 현황</h2>
-                        <div className="pie-chart-wrapper">
-                            <PieChart width={350} height={250}>
+                    <div className={styles.rightSection}>
+                        <div className={styles.chartContainer}>
+                            <h2>전체 출결 현황</h2>
+                            <div className={styles.pieChartWrapper}>
+                                <PieChart width={350} height={250}>
                                 <Pie
                                     data={pieData}
                                     cx={160}
@@ -101,16 +98,11 @@ const AttendanceManagementPage = () => {
                         </div>
                     </div>
 
-                    {/* 과목별 출결 현황 (막대 그래프) */}
-                    <div className="chart-container">
-                        <h2>과목별 출결 현황</h2>
-                        <div className="bar-chart-wrapper">
-                            <BarChart
-                                width={350}
-                                height={250}
-                                data={barData}
-                                margin={{top: 20, right: 30, left: 20, bottom: 5}}
-                            >
+                        <div className={styles.chartContainer}>
+                            <h2>과목별 출결 현황</h2>
+                            <div className={styles.barChartWrapper}>
+                                <BarChart width={350} height={250} data={barData}
+                                          margin={{top: 20, right: 30, left: 20, bottom: 5}}>
                                 <CartesianGrid strokeDasharray="3 3"/>
                                 <XAxis dataKey="courseName"/>
                                 <YAxis/>
@@ -137,13 +129,11 @@ const AttendanceManagementPage = () => {
                             </BarChart>
                         </div>
                     </div>
-
                     </div>
-
                 </div>
             </div>
         </div>
     );
 };
 
-export default AttendanceManagementPage;
+export default AttendanceReportPage;

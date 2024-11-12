@@ -1,0 +1,49 @@
+/* ParentMain.module.css */
+
+/* 통계 및 차트 영역 */
+.statisticsContainer {
+    display: flex;
+    gap: 20px;
+    margin-top: 20px;
+}
+
+.attendanceStatus,
+.totalAttendance,
+.notice {
+    width: 30%;
+    padding: 20px;
+    background: white;
+    border-radius: 10px;
+    border: 2px solid black;
+    text-align: center;
+}
+
+/* 시간표 영역 */
+.timetable {
+    margin-top: 20px;
+}
+
+.timetableContent {
+    width: 100%;
+    height: 400px;
+    background: white;
+    border: 2px solid black;
+    border-radius: 10px;
+}
+
+/* 기타 컴포넌트별 스타일 */
+.header {
+    /* 헤더 영역 스타일 */
+}
+
+.barLineChart {
+    /* 막대/선형 차트 스타일 */
+}
+
+.pieChart {
+    /* 원형 차트 스타일 */
+}
+
+.noticeContent {
+    /* 공지사항 내용 스타일 */
+}

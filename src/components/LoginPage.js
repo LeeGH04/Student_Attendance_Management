@@ -1,37 +1,39 @@
 import React, {useState} from 'react';
 import axios from 'axios';
 import {useNavigate} from 'react-router-dom';
-import '../css/LoginPage.css';
+import styles from '../css/LoginPage.module.css';
 import loginImage from '../images/loginp.png';
 import '../css/Base.css';
-//
+
 const LoginPage = () => {
-    const [id, setId] = useState('');  // 학번을 저장
+    const [id, setId] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
-    const navigate = useNavigate();  // 페이지 이동을 위한 navigate 훅
+    const navigate = useNavigate();
 
     const handleLogin = async (e) => {
-        e.preventDefault();  // 폼 제출 시 새로 고침 방지
+        e.preventDefault();
 
-        // 보내는 데이터 확인
         console.log("보내는 데이터:", {id, password});
 
         try {
-            // 서버로 로그인 요청 보내기
             const response = await axios.post('http://localhost:5002/login', {
                 id: id,
                 password: password,
             });
 
             if (response.status === 200) {
-                const {message, role} = response.data;
-
+                const {message, role, token} = response.data;
                 console.log('로그인 성공:', message);
-                localStorage.setItem('isLoggedIn', 'true');
-                localStorage.setItem('userRole', role); // role 저장
+                console.log('받은 토큰:', token);
 
-                // 권한에 따라 페이지 이동
+                localStorage.setItem('authToken', token);
+                localStorage.setItem('isLoggedIn', 'true');
+                localStorage.setItem('userRole', role);
+
+                const savedToken = localStorage.getItem('authToken');
+                console.log('저장된 토큰:', savedToken);
+
                 if (role === 'student') {
                     navigate('/student-main');
                 } else if (role === 'professor') {
@@ -63,42 +65,42 @@ const LoginPage = () => {
     };
 
     return (
-        <div className="screen">
-            <div className="login-container">
-                <div className="login-icon-section">
-                    {/* 여기에 큰 아이콘 */}
+        <div className={styles.screen}>
+            <div className={styles.loginContainer}>
+                <div className={styles.loginIconSection}>
                     <img src={loginImage} alt="login icon"/>
-                    {/*<YourIcon className="w-64 h-64"/> /!* 아이콘 크기 예시 *!/*/}
                 </div>
-                <div className="login-form-section">
-                    <div className="text-wrapper">로그인</div>
+                <div className={styles.loginFormSection}>
+                    <div className={styles.textWrapper}>로그인</div>
                     <form onSubmit={handleLogin}>
-                        <div className="input-group">
-                            <label className="label">학번</label>
+                        <div className={styles.inputGroup}>
+                            <label className={styles.label}>학번</label>
                             <input
                                 type="text"
-                                className="input"
+                                className={styles.input}
                                 placeholder="학번을 입력하세요"
                                 value={id}
                                 onChange={(e) => setId(e.target.value)}
                             />
                         </div>
-                        <div className="input-group">
-                            <label className="label">비밀번호</label>
+                        <div className={styles.inputGroup}>
+                            <label className={styles.label}>비밀번호</label>
                             <input
                                 type="password"
-                                className="input"
+                                className={styles.input}
                                 placeholder="비밀번호를 입력하세요"
                                 value={password}
                                 onChange={(e) => setPassword(e.target.value)}
                             />
                         </div>
-                        {error && <div className="error-message">{error}</div>}
-                        <button type="submit" className="login-button">
+                        {error && <div>{error}</div>}
+                        <button type="submit" >
                             로그인
                         </button>
                     </form>
-                    <div className="password-reset" style={{cursor: 'pointer'}}>
+                    <div
+                        style={{cursor: 'pointer'}}
+                    >
                         비밀번호 찾기
                     </div>
                 </div>

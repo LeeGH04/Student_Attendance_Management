@@ -1,5 +1,5 @@
 import React from 'react';
-import '../css/AttendanceManagementPage.css'; // CSS 파일 import
+import styles from '../css/AttendanceManagementPage.module.css';
 import '../css/Base.css';
 
 const AttendanceManagementPage = () => {
@@ -9,7 +9,6 @@ const AttendanceManagementPage = () => {
                 <h1 className="title">출석 관리</h1>
             </div>
         </div>
-
     );
 };
 

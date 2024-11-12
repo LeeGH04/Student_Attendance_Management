@@ -1,0 +1,114 @@
+/* AttendancePage.module.css */
+
+.attendanceContainer {
+    margin-left: 70px;
+    display: flex;
+    justify-content: space-between;
+}
+
+.box {
+    margin-top: 300px;
+}
+
+.leftSection {
+    width: 48%;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    margin-left: -70px;
+}
+
+.rightSection {
+    margin-top: 150px;
+    width: 48%;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+/* 현재 수업 섹션 */
+.currentClass h2 {
+    font-size: 24px;
+    margin-bottom: 10px;
+}
+
+.classInfoBox {
+    padding: 20px;
+    background: white;
+    border-radius: 10px;
+    border: 2px solid black;
+    text-align: center;
+}
+
+/* 출석 코드 입력 섹션 */
+.attendanceCode h2 {
+    font-size: 24px;
+    margin-bottom: 10px;
+}
+
+.attendanceInput {
+    padding: 10px;
+    font-size: 16px;
+    margin-bottom: 20px;
+    width: 100%;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    text-align: center;
+}
+
+/* button은 전역 스타일로 유지할지 모듈로 변경할지 선택 */
+.submitButton {
+    padding: 10px 20px;
+    font-size: 16px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.submitButton:hover {
+    background-color: #45a049;
+}
+
+/* 오늘의 시간표 섹션 */
+.todayTimetable h2 {
+    font-size: 24px;
+    margin-bottom: 10px;
+}
+
+.timetableBox {
+    padding: 20px;
+    background: white;
+    border-radius: 10px;
+    border: 2px solid black;
+    text-align: center;
+    flex-grow: 1;
+    height: auto;
+    margin-bottom: 10px;
+}
+
+.timetableList {
+    list-style-type: none;
+    padding: 0;
+}
+
+.timetableItem {
+    padding: 15px;
+    background-color: #f4f4f4;
+    border-radius: 10px;
+    border: 1px solid #ccc;
+    margin-bottom: 10px;
+    display: flex;
+    justify-content: space-between;
+}
+
+.timetableItem p {
+    font-size: 18px;
+    margin: 0;
+}
+
+.timetableItem span {
+    font-weight: bold;
+    color: #333;
+}

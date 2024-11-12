@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import '../css/ProfileManagementPage.css';
+import styles from '../css/ProfileManagementPage.module.css';
 import '../css/Base.css';
 
 const ProfileManagementPage = () => {
@@ -69,70 +69,68 @@ const ProfileManagementPage = () => {
   return (
       <div className="main-container">
         <div className="content-container">
-
-              <h1 className='title'>개인정보 관리</h1>
-              <form onSubmit={handleSubmit}>
-                <div className="profile-field">
-                  <label htmlFor="name">이름:</label>
-                  <input
-                      type="text"
-                      id="name"
-                      name="name"
-                      value={userData.name}
-                      readOnly
-                      className="readonly-field"
-                  />
-                </div>
-                <div className="profile-field">
-                  <label htmlFor="id">학번:</label>
-                  <input
-                      type="text"
-                      id="id"
-                      name="id"
-                      value={userData.id}
-                      readOnly
-                      className="readonly-field"
-                  />
-                </div>
-                <div className="profile-field">
-                  <label htmlFor="email">이메일:</label>
-                  <input
-                      type="email"
-                      id="email"
-                      name="email"
-                      value={userData.email}
-                      onChange={handleChange}
-                      className="editable-field"
-                  />
-                </div>
-                <div className="profile-field">
-                  <label htmlFor="phone_number">전화번호:</label>
-                  <input
-                      type="tel"
-                      id="phone_number"
-                      name="phone_number"
-                      value={userData.phone_number}
-                      onChange={handleChange}
-                      className="editable-field"
-                  />
-                </div>
-                <div className="profile-field">
-                  <label htmlFor="password">비밀번호:</label>
-                  <input
-                      type="password"
-                      id="password"
-                      name="password"
-                      value={userData.password}
-                      onChange={handleChange}
-                      className="editable-field"
-                  />
-                </div>
-                <button type="submit">수정사항 저장</button>
-              </form>
+          <h1 className="title">개인정보 관리</h1>
+          <form onSubmit={handleSubmit}>
+            <div className={styles.profileField}>
+              <label htmlFor="name">이름:</label>
+              <input
+                  type="text"
+                  id="name"
+                  name="name"
+                  value={userData.name}
+                  readOnly
+                  className={styles.readonlyField}
+              />
             </div>
-
+            <div className={styles.profileField}>
+              <label htmlFor="id">학번:</label>
+              <input
+                  type="text"
+                  id="id"
+                  name="id"
+                  value={userData.id}
+                  readOnly
+                  className={styles.readonlyField}
+              />
+            </div>
+            <div className={styles.profileField}>
+              <label htmlFor="email">이메일:</label>
+              <input
+                  type="email"
+                  id="email"
+                  name="email"
+                  value={userData.email}
+                  onChange={handleChange}
+                  className={styles.editableField}
+              />
+            </div>
+            <div className={styles.profileField}>
+              <label htmlFor="phone_number">전화번호:</label>
+              <input
+                  type="tel"
+                  id="phone_number"
+                  name="phone_number"
+                  value={userData.phone_number}
+                  onChange={handleChange}
+                  className={styles.editableField}
+              />
+            </div>
+            <div className={styles.profileField}>
+              <label htmlFor="password">비밀번호:</label>
+              <input
+                  type="password"
+                  id="password"
+                  name="password"
+                  value={userData.password}
+                  onChange={handleChange}
+                  className={styles.editableField}
+              />
+            </div>
+            <button type="submit">수정사항 저장</button>
+          </form>
+        </div>
       </div>
-          );
-          };
+  );
+};
 
-          export default ProfileManagementPage;
+export default ProfileManagementPage;

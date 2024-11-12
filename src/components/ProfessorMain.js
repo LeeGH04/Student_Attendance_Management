@@ -1,7 +1,6 @@
-// ProfessorMain.js
 import React from 'react';
 import SideBar from './SideBar';
-import '../css/ProfessorMain.css';
+import styles from '../css/ProfessorMain.module.css';
 import '../css/Base.css';
 
 const ProfessorMain = () => {
@@ -9,26 +8,26 @@ const ProfessorMain = () => {
         <div className="main-container">
             <SideBar />
             <div className="content-container">
-                <div className="header">
+                <div className={styles.header}>
                     <h1 className="title">수업 현황</h1>
                 </div>
-                <div className="statistics-container">
-                    <div className="attendance-status">
+                <div className={styles.statisticsContainer}>
+                    <div className={styles.attendanceStatus}>
                         <h2>현재 출석 현황</h2>
-                        <div className="bar-line-chart"></div>
+                        <div className={styles.barLineChart}></div>
                     </div>
-                    <div className="total-attendance">
+                    <div className={styles.totalAttendance}>
                         <h2>총 출석 현황</h2>
-                        <div className="pie-chart"></div>
+                        <div className={styles.pieChart}></div>
                     </div>
-                    <div className="notice">
+                    <div className={styles.notice}>
                         <h2>공지사항</h2>
-                        <div className="notice-content"></div>
+                        <div className={styles.noticeContent}></div>
                     </div>
                 </div>
-                <div className="timetable">
+                <div className={styles.timetable}>
                     <h2>시간표</h2>
-                    <div className="timetable-content"></div>
+                    <div className={styles.timetableContent}></div>
                 </div>
             </div>
         </div>

@@ -1,0 +1,86 @@
+/* ProfileManagementPage.module.css */
+
+.leftSection {
+    width: 48%;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    margin-left: -70px;
+}
+
+.rightSection {
+    margin-top: 150px;
+    width: 48%;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.profileTitle {
+    font-size: 2rem;
+    font-weight: bold;
+    color: #333;
+    margin-bottom: 20px;
+}
+
+/* 폼 관련 스타일 */
+.profileForm {
+    display: flex;
+    flex-direction: column;
+}
+
+.profileField {
+    margin-bottom: 20px;
+}
+
+.profileForm label {
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+.profileForm input {
+    padding: 8px 12px;
+    font-size: 1rem;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    width: 100%;
+}
+
+/* 입력 필드 스타일 */
+.readonlyField {
+    background-color: #dcdcdc;
+    color: #555;
+    cursor: not-allowed;
+    border: 1px solid #bbb;
+}
+
+.editableField {
+    background-color: #f5f5f5;
+    color: #333;
+    border: 1px solid #ccc;
+}
+
+/* 메시지와 버튼 스타일 */
+.profileMessage {
+    margin-top: 20px;
+    color: #007bff;
+}
+
+.submitButton {
+    padding: 10px 20px;
+    background-color: #007bff;
+    color: white;
+    font-size: 1rem;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.submitButton:hover {
+    background-color: #0056b3;
+}
+
+/* 여백 관리 */
+.spacer {
+    margin-bottom: 40px;
+}

@@ -1,5 +1,5 @@
 import React from 'react';
-import '../css/UserManagementPage.css'; // CSS 파일 import
+import styles from '../css/UserManagementPage.module.css';
 import '../css/Base.css';
 
 const UserManagementPage = () => {
@@ -9,7 +9,6 @@ const UserManagementPage = () => {
                 <h1 className="title">사용자 관리</h1>
             </div>
         </div>
-
     );
 };
 

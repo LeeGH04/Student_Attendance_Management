@@ -1,0 +1,56 @@
+/* AnnouncementsPage.module.css */
+
+/* 타이틀 스타일 */
+.announcementTitle {
+    font-size: 2rem;
+    font-weight: bold;
+    color: #333;
+    margin-bottom: 20px;
+}
+
+/* 검색 섹션 */
+.searchSection {
+    display: flex;
+    align-items: center;
+    margin-bottom: 30px;
+}
+
+.filterDropdown {
+    padding: 8px 12px;
+    margin-right: 10px;
+    font-size: 1rem;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+.searchInput {
+    padding: 8px 12px;
+    font-size: 1rem;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    margin-right: 10px;
+    width: 300px;
+}
+
+.searchButton {
+    padding: 8px 12px;
+    font-size: 1.2rem;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.searchButton:hover {
+    background-color: #0056b3;
+}
+
+/* 공지사항 리스트 스타일 */
+.announcementListPlaceholder {
+    background-color: #ffffff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    min-height: 400px;
+}
