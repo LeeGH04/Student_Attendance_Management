@@ -22,7 +22,7 @@ function App() {
     useEffect(() => {
         const isChrome = /Chrome/.test(navigator.userAgent) && /Google Inc/.test(navigator.vendor);
         if (isChrome) {
-            document.body.style.zoom = "75%";
+            document.body.style.zoom = "65%";
         }
     }, []);
 

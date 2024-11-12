@@ -12,6 +12,7 @@
   /*background-repeat: no-repeat; !* 배경 이미지 반복 방지 *!*/
   /*background-color: #f0f0f0; !* 원하는 색상으로 설정 (예: 연한 회색) *!*/
   background: linear-gradient(180deg, #F0EBEB 0%, #C6F6FF 100%);
+  height: 155vh;
 }
 
 /*.login-container {*/
