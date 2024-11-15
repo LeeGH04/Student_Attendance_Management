@@ -19,17 +19,17 @@
 }
 
 /* 시간표 영역 */
-.timetable {
-    margin-top: 20px;
-}
+/*.timetable {*/
+/*    margin-top: 20px;*/
+/*}*/
 
-.timetableContent {
-    width: 100%;
-    height: 400px;
-    background: white;
-    border: 2px solid black;
-    border-radius: 10px;
-}
+/*.timetableContent {*/
+/*    width: 100%;*/
+/*    height: 400px;*/
+/*    background: white;*/
+/*    border: 2px solid black;*/
+/*    border-radius: 10px;*/
+/*}*/
 
 /* 기타 컴포넌트별 스타일 */
 .header {
@@ -46,4 +46,30 @@
 
 .noticeContent {
     /* 공지사항 내용 스타일 */
+}
+
+.timetableGrid {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+    table-layout: fixed; /* 모든 열을 동일한 너비로 설정 */
+}
+
+.timetableGrid th,
+.timetableGrid td {
+    border: 1px solid #ddd;
+    padding: 10px;
+    text-align: center;
+    width: calc(100% / 6); /* 6개 열(교시 + 5일)을 동일하게 나눔 */
+    height: 80px; /* 모든 셀의 높이를 동일하게 설정 */
+}
+
+.class {
+    background-color: #f0f0f0;
+    padding: 5px;
+    border-radius: 4px;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
 }

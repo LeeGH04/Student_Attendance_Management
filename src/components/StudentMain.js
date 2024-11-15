@@ -1,9 +1,66 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
+import axios from 'axios';
 import SideBar from './SideBar';
 import styles from '../css/StudentMain.module.css';
 import '../css/Base.css';
 
 const StudentMain = () => {
+    const [timetableData, setTimetableData] = useState([]);
+    const userId = localStorage.getItem('userId');
+
+    useEffect(() => {
+        const fetchTimetable = async () => {
+            try {
+                const response = await axios.get(`http://localhost:5002/api/timetable/${userId}`);
+                setTimetableData(response.data);
+            } catch (error) {
+                console.error('시간표 조회 실패:', error);
+            }
+        };
+
+        fetchTimetable();
+    }, [userId]);
+
+    const renderTimetable = () => {
+        const days = ['월', '화', '수', '목', '금'];
+        const times = Array.from({length: 8}, (_, i) => i + 1);  // 1교시~8교시
+
+        return (
+            <table className={styles.timetableGrid}>
+                <thead>
+                <tr>
+                    <th></th>
+                    {days.map(day => <th key={day}>{day}</th>)}
+                </tr>
+                </thead>
+                <tbody>
+                {times.map(time => (
+                    <tr key={time}>
+                        <td>{time}교시</td>
+                        {days.map(day => {
+                            const lecture = timetableData.find(class_ =>
+                                class_.day_of_week === day &&
+                                parseInt(class_.start_time.split(':')[0]) === time + 8
+                            );
+                            return (
+                                <td key={day}>
+                                    {lecture ? (
+                                        <div className={styles.class}>
+                                            {lecture.class_name}
+                                            <br />
+                                            {lecture.room_number}
+                                        </div>
+                                    ) : null}
+                                </td>
+                            );
+                        })}
+                    </tr>
+                ))}
+                </tbody>
+            </table>
+        );
+    };
+
     return (
         <div className="main-container">
             <SideBar />
@@ -27,7 +84,9 @@ const StudentMain = () => {
                 </div>
                 <div className={styles.timetable}>
                     <h2>시간표</h2>
-                    <div className={styles.timetableContent}></div>
+                    <div className={styles.timetableContent}>
+                        {renderTimetable()}
+                    </div>
                 </div>
             </div>
         </div>

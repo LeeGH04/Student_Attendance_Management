@@ -54,7 +54,13 @@ app.post('/login', async (req, res) => {
                 process.env.JWT_SECRET,
                 { expiresIn: '1h' }
             );
-            res.json({ success: true, message: '로그인 성공!', token, role: user.role });
+            res.json({
+                success: true,
+                message: '로그인 성공!',
+                token,
+                role: user.role,
+                userId: user.id  // id 추가
+            });
         } else {
             res.status(401).json({ success: false, message: '비밀번호가 일치하지 않습니다.' });
         }
@@ -121,6 +127,153 @@ app.post('/updateUserData', authenticateToken, async (req, res) => {
     } catch (error) {
         console.error('업데이트 중 오류 발생:', error);
         res.status(500).json({ success: false, message: '정보를 업데이트하는 중 오류가 발생했습니다.' });
+    }
+});
+
+// newServer.js에 추가할 API:
+app.get('/api/timetable/:studentId', async (req, res) => {
+    const { studentId } = req.params;
+
+    try {
+        const query = `
+           SELECT t.*, c.class_name
+           FROM Timetable t
+           JOIN Classes c ON t.class_id = c.class_id
+           JOIN Class_Students cs ON c.class_id = cs.class_id
+           WHERE cs.student_id = ?
+           ORDER BY t.day_of_week, t.start_time
+       `;
+
+        const [rows] = await dbPool.query(query, [studentId]);
+        res.json(rows);
+    } catch (error) {
+        console.error('시간표 조회 오류:', error);
+        res.status(500).json({
+            success: false,
+            message: '시간표를 불러오는데 실패했습니다.'
+        });
+    }
+});
+
+// 교수의 수업 목록 조회
+app.get('/api/professor/classes/:professorId', async (req, res) => {
+    const { professorId } = req.params;
+    try {
+        const [rows] = await dbPool.query(
+            'SELECT * FROM Classes WHERE professor_id = ?',
+            [professorId]
+        );
+        res.json(rows);
+    } catch (error) {
+        console.error('수업 목록 조회 오류:', error);
+        res.status(500).json({ message: '수업 목록 조회 실패' });
+    }
+});
+
+// 수업의 학생 목록 조회
+app.get('/api/class/students/:classId', async (req, res) => {
+    const { classId } = req.params;
+    try {
+        const [rows] = await dbPool.query(
+            `SELECT u.* FROM users u 
+            JOIN Class_Students cs ON u.id = cs.student_id 
+            WHERE cs.class_id = ?`,
+            [classId]
+        );
+        res.json(rows);
+    } catch (error) {
+        console.error('학생 목록 조회 오류:', error);
+        res.status(500).json({ message: '학생 목록 조회 실패' });
+    }
+});
+
+// 출석 보고서 저장
+app.post('/api/attendance/report', async (req, res) => {
+    const { class_id, week, students, classCode } = req.body;
+
+    try {
+        // 1. 기존 출석 기록 삭제
+        await dbPool.query(
+            `DELETE FROM ClassWeekly_Students 
+             WHERE class_id = ? AND week = ?`,
+            [class_id, week]
+        );
+
+        // 2. 코드가 있는 경우 처리
+        if (classCode) {
+            // 기존 활성 코드 비활성화
+            await dbPool.query(
+                `UPDATE Class_Codes 
+                 SET is_active = FALSE 
+                 WHERE class_id = ?`,
+                [class_id]
+            );
+
+            // 새 코드 생성
+            await dbPool.query(
+                `INSERT INTO Class_Codes 
+                 (class_id, week, attendance_code, expired_at) 
+                 VALUES (?, ?, ?, DATE_ADD(NOW(), INTERVAL 5 MINUTE))`,
+                [class_id, week, classCode]
+            );
+        }
+
+        // 3. 새로운 출석 기록 저장
+        for (const student of students) {
+            await dbPool.query(
+                `INSERT INTO ClassWeekly_Students 
+                 (class_id, week, student_id, attendance_status) 
+                 VALUES (?, ?, ?, ?)`,
+                [class_id, week, student.id, student.status]
+            );
+        }
+
+        res.json({ message: '출석부 저장 성공' });
+    } catch (error) {
+        console.error('출석부 저장 오류:', error);
+        res.status(500).json({
+            message: '출석부 저장 실패',
+            error: error.message,
+            sqlState: error.sqlState,
+            sqlMessage: error.sqlMessage
+        });
+    }
+});
+
+// 주차별 출석 현황 조회 API 추가
+app.get('/api/attendance/report/:classId/:week', async (req, res) => {
+    const { classId, week } = req.params;
+
+    try {
+        const [rows] = await dbPool.query(
+            `SELECT cws.*, u.name 
+             FROM ClassWeekly_Students cws
+             JOIN users u ON cws.student_id = u.id
+             WHERE cws.class_id = ? AND cws.week = ?`,
+            [classId, week]
+        );
+        res.json(rows);
+    } catch (error) {
+        console.error('출석 현황 조회 오류:', error);
+        res.status(500).json({ message: '출석 현황 조회 실패' });
+    }
+});
+// 주차별 출석 현황 조회 API 추가
+app.get('/api/attendance/report/:classId/:week', async (req, res) => {
+    const { classId, week } = req.params;
+
+    try {
+        const [rows] = await dbPool.query(
+            `SELECT cws.*, u.name 
+             FROM ClassWeekly_Students cws
+             JOIN users u ON cws.student_id = u.id
+             WHERE cws.class_id = ? AND cws.week = ?`,
+            [classId, week]
+        );
+        res.json(rows);
+    } catch (error) {
+        console.error('출석 현황 조회 오류:', error);
+        res.status(500).json({ message: '출석 현황 조회 실패' });
     }
 });
 

@@ -23,10 +23,11 @@ const LoginPage = () => {
             });
 
             if (response.status === 200) {
-                const {message, role, token} = response.data;
+                const { message, role, token, userId } = response.data;
                 console.log('로그인 성공:', message);
                 console.log('받은 토큰:', token);
 
+                localStorage.setItem('userId', userId);
                 localStorage.setItem('authToken', token);
                 localStorage.setItem('isLoggedIn', 'true');
                 localStorage.setItem('userRole', role);
