@@ -18,7 +18,7 @@ const ProfileManagementPage = () => {
           method: 'GET',
           headers: {
             'Content-Type': 'application/json',
-            'Authorization': `Bearer ${localStorage.getItem('authToken')}`,
+            'Authorization': `Bearer ${sessionStorage.getItem('authToken')}`,
           },
         });
 
@@ -51,7 +51,7 @@ const ProfileManagementPage = () => {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('authToken')}`,
+          'Authorization': `Bearer ${sessionStorage.getItem('authToken')}`,
         },
         body: JSON.stringify(userData),
       });

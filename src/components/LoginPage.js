@@ -27,12 +27,12 @@ const LoginPage = () => {
                 console.log('로그인 성공:', message);
                 console.log('받은 토큰:', token);
 
-                localStorage.setItem('userId', userId);
-                localStorage.setItem('authToken', token);
-                localStorage.setItem('isLoggedIn', 'true');
-                localStorage.setItem('userRole', role);
+                sessionStorage.setItem('userId', userId);
+                sessionStorage.setItem('authToken', token);
+                sessionStorage.setItem('isLoggedIn', 'true');
+                sessionStorage.setItem('userRole', role);
 
-                const savedToken = localStorage.getItem('authToken');
+                const savedToken = sessionStorage.getItem('authToken');
                 console.log('저장된 토큰:', savedToken);
 
                 if (role === 'student') {

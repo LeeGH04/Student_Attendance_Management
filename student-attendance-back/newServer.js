@@ -307,23 +307,7 @@ app.post('/api/attendance/report', async (req, res) => {
 });
 
 // 주차별 출석 현황 조회 API 추가
-app.get('/api/attendance/report/:classId/:week', async (req, res) => {
-    const { classId, week } = req.params;
 
-    try {
-        const [rows] = await dbPool.query(
-            `SELECT cws.*, u.name 
-             FROM ClassWeekly_Students cws
-             JOIN users u ON cws.student_id = u.id
-             WHERE cws.class_id = ? AND cws.week = ?`,
-            [classId, week]
-        );
-        res.json(rows);
-    } catch (error) {
-        console.error('출석 현황 조회 오류:', error);
-        res.status(500).json({ message: '출석 현황 조회 실패' });
-    }
-});
 // 주차별 출석 현황 조회 API 추가
 app.get('/api/attendance/report/:classId/:week', async (req, res) => {
     const { classId, week } = req.params;
@@ -342,9 +326,162 @@ app.get('/api/attendance/report/:classId/:week', async (req, res) => {
         res.status(500).json({ message: '출석 현황 조회 실패' });
     }
 });
+// newServer.js에 추가
 
+// 학생의 수강 중인 수업 목록 조회
+// newServer.js에서 수정
+// newServer.js에서 수정
+app.get('/api/student/classes/:studentId', async (req, res) => {
+    const { studentId } = req.params;
 
+    try {
+        const query = `
+            SELECT DISTINCT
+                c.class_id,
+                c.class_name,
+                t.start_time,
+                t.end_time,
+                t.day_of_week,
+                t.room_number
+            FROM Classes c
+                     JOIN Class_Students cs ON c.class_id = cs.class_id
+                     LEFT JOIN Timetable t ON c.class_id = t.class_id
+            WHERE cs.student_id = ?
+            ORDER BY t.day_of_week, t.start_time;
+        `;
 
+        const [rows] = await dbPool.query(query, [studentId]);
+        console.log('Fetched classes:', rows);  // 디버깅용
+        res.json(rows);
+    } catch (error) {
+        console.error('수업 목록 조회 오류:', error);
+        res.status(500).json({
+            success: false,
+            message: '수업 목록을 불러오는데 실패했습니다.'
+        });
+    }
+});
+// 출석 체크
+// newServer.js - API 수정
+app.post('/api/attendance/check', async (req, res) => {
+    const { studentId, classId, week, attendanceCode } = req.body;
+    console.log('Received attendance check request:', { studentId, classId, week, attendanceCode });
+
+    try {
+        // 1. 유효한 출석 코드인지 확인
+        const [codeCheck] = await dbPool.query(
+            `SELECT cc.*, c.class_name
+             FROM Class_Codes cc
+                      JOIN Classes c ON cc.class_id = c.class_id
+             WHERE cc.class_id = ?
+               AND cc.week = ?
+               AND cc.attendance_code = ?
+               AND cc.is_active = TRUE
+               AND cc.expired_at > NOW()`,
+            [classId, week, attendanceCode]
+        );
+        console.log('Code check result:', codeCheck);
+
+        if (codeCheck.length === 0) {
+            return res.status(400).json({
+                success: false,
+                message: '유효하지 않은 출석 코드입니다.'
+            });
+        }
+
+        // 2. 학생이 해당 수업을 수강하는지 확인
+        const [studentCheck] = await dbPool.query(
+            `SELECT * FROM Class_Students
+             WHERE class_id = ? AND student_id = ?`,
+            [classId, studentId]
+        );
+        console.log('Student check result:', studentCheck);
+
+        if (studentCheck.length === 0) {
+            return res.status(403).json({
+                success: false,
+                message: '이 수업을 수강하지 않는 학생입니다.'
+            });
+        }
+
+        // 3. 이미 출석했는지 확인
+        const [attendanceCheck] = await dbPool.query(
+            `SELECT * FROM ClassWeekly_Students 
+             WHERE class_id = ? AND student_id = ? AND week = ?`,
+            [classId, studentId, week]
+        );
+        console.log('Attendance check result:', attendanceCheck);
+
+        if (attendanceCheck.length > 0) {
+            return res.status(400).json({
+                success: false,
+                message: '이미 출석 처리되었습니다.'
+            });
+        }
+
+        // 4. 출석 처리
+        await dbPool.query(
+            `INSERT INTO ClassWeekly_Students 
+             (class_id, student_id, week, attendance_status) 
+             VALUES (?, ?, ?, 'present')`,
+            [classId, studentId, week]
+        );
+
+        console.log('Attendance recorded successfully');
+
+        res.json({
+            success: true,
+            message: '출석이 완료되었습니다.',
+            className: codeCheck[0].class_name
+        });
+
+    } catch (error) {
+        console.error('Error in attendance check:', error);
+        res.status(500).json({
+            success: false,
+            message: '출석 처리 중 오류가 발생했습니다.',
+            error: error.message
+        });
+    }
+});
+
+// newServer.js에 새로운 API 추가
+// 출석 코드 생성 API
+app.post('/api/attendance/generate-code', async (req, res) => {
+    const { class_id, week } = req.body;
+
+    try {
+        // 기존 활성 코드 비활성화
+        await dbPool.query(
+            `UPDATE Class_Codes
+             SET is_active = FALSE
+             WHERE class_id = ? AND week = ?`,
+            [class_id, week]
+        );
+
+        // 새 코드 생성
+        const newCode = Math.random().toString(36).substring(2, 8).toUpperCase();
+        const [result] = await dbPool.query(
+            `INSERT INTO Class_Codes
+                 (class_id, week, attendance_code, expired_at, is_active)
+             VALUES (?, ?, ?, DATE_ADD(NOW(), INTERVAL 30 MINUTE), TRUE)`,
+            [class_id, week, newCode]
+        );
+
+        res.json({
+            success: true,
+            code: newCode,
+            message: '출석 코드가 생성되었습니다.'
+        });
+
+    } catch (error) {
+        console.error('출석 코드 생성 오류:', error);
+        res.status(500).json({
+            success: false,
+            message: '출석 코드 생성 중 오류가 발생했습니다.'
+        });
+    }
+});
 app.listen(port, () => {
     console.log(`Server running on port ${port}`);
 });

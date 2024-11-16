@@ -12,7 +12,7 @@ const AttendanceReportPage = () => {
         summary: []
     });
     const [isLoading, setIsLoading] = useState(true);
-    const studentId = localStorage.getItem('userId');
+    const studentId = sessionStorage.getItem('userId');
 
     useEffect(() => {
         const fetchAttendanceData = async () => {

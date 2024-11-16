@@ -6,16 +6,15 @@ import '../css/Base.css';
 
 const SideBar = () => {
     const navigate = useNavigate();
-    const role = localStorage.getItem('userRole');
-    const isLoggedIn = localStorage.getItem('isLoggedIn');
+    const role = sessionStorage.getItem('userRole');
+    const isLoggedIn = sessionStorage.getItem('isLoggedIn');
 
     if (!isLoggedIn) {
         return null;
     }
 
     const handleLogout = () => {
-        localStorage.removeItem('isLoggedIn');
-        localStorage.removeItem('userRole');
+        sessionStorage.clear();
         navigate('/login');
     };
 

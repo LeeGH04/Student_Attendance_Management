@@ -4,8 +4,8 @@ import SideBar from './SideBar';
 import '../css/Base.css';
 //
 const PrivateRoute = ({ children }) => {
-    const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
-    const role = localStorage.getItem('userRole'); // 사용자 권한 가져오기
+    const isLoggedIn = sessionStorage.getItem('isLoggedIn') === 'true';
+    const role = sessionStorage.getItem('userRole'); // 사용자 권한 가져오기
 
     // 로그인하지 않은 경우 로그인 페이지로 리다이렉트
     if (!isLoggedIn) {

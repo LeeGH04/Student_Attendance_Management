@@ -26,7 +26,7 @@ const AttendanceReportCreatePage = () => {
         'early_leave': '조퇴'
     };
     const [classes, setClasses] = useState([]);
-    const professorId = localStorage.getItem('userId');
+    const professorId = sessionStorage.getItem('userId');
 
     useEffect(() => {
         const fetchClasses = async () => {
@@ -125,6 +125,30 @@ const AttendanceReportCreatePage = () => {
             alert(error.response?.data?.message || '출석부 저장에 실패했습니다.');
         }
     };
+    const handleGenerateCode = async () => {
+        if (!reportData.class_id || !reportData.week) {
+            alert('수업과 주차를 선택해주세요.');
+            return;
+        }
+
+        try {
+            const response = await axios.post('http://localhost:5002/api/attendance/generate-code', {
+                class_id: reportData.class_id,
+                week: reportData.week
+            });
+
+            if (response.data.success) {
+                setReportData(prev => ({
+                    ...prev,
+                    classCode: response.data.code
+                }));
+                alert('새로운 출석 코드가 생성되었습니다. (30분간 유효)');
+            }
+        } catch (error) {
+            console.error('코드 생성 실패:', error);
+            alert('출석 코드 생성에 실패했습니다.');
+        }
+    };
 
     return (
         <div className="main-container">
@@ -166,11 +190,24 @@ const AttendanceReportCreatePage = () => {
 
                         <div className={styles.formGroup}>
                             <label>수업 코드</label>
-                            <div className={styles.codeDisplay}>
-                                {reportData.classCode}
+                            <div className={styles.codeSection}>
+                                <div className={styles.codeDisplay}>
+                                    {reportData.classCode || '코드 미생성'}
+                                </div>
+                                <button
+                                    onClick={handleGenerateCode}
+                                    className={styles.generateBtn}
+                                    type="button"
+                                >
+                                    코드 생성
+                                </button>
+                            </div>
+                            <div className={styles.codeInfo}>
+                                생성된 코드는 30분간 유효합니다.
                             </div>
                         </div>
                     </div>
+
 
                     <div className={styles.studentGrid}>
                         {reportData.students.map(student => (

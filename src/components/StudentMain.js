@@ -6,7 +6,7 @@ import '../css/Base.css';
 
 const StudentMain = () => {
     const [timetableData, setTimetableData] = useState([]);
-    const userId = localStorage.getItem('userId');
+    const userId = sessionStorage.getItem('userId');
 
     useEffect(() => {
         const fetchTimetable = async () => {

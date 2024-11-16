@@ -162,3 +162,37 @@
     justify-content: center;
     margin-top: 20px;
 }
+.codeSection {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+.codeDisplay {
+    padding: 10px;
+    background-color: #f5f5f5;
+    border-radius: 4px;
+    font-size: 1.2em;
+    font-weight: bold;
+    min-width: 100px;
+    text-align: center;
+}
+
+.generateBtn {
+    padding: 8px 16px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.generateBtn:hover {
+    background-color: #45a049;
+}
+
+.codeInfo {
+    font-size: 0.8em;
+    color: #666;
+    margin-top: 5px;
+}
