@@ -616,6 +616,47 @@ app.get('/api/users/search', async (req, res) => {
     }
 });
 
+// 사용자 목록 조회
+app.get('/api/users', async (req, res) => {
+    try {
+        const [rows] = await dbPool.query('SELECT * FROM users ORDER BY id');
+        res.json(rows);
+    } catch (error) {
+        console.error('사용자 조회 오류:', error);
+        res.status(500).json({ message: '사용자 목록 조회에 실패했습니다.' });
+    }
+});
+
+// 사용자 정보 업데이트
+app.put('/api/users/:userId', async (req, res) => {
+    const { userId } = req.params;
+    const { name, email, phone_number, role } = req.body;
+
+    try {
+        await dbPool.query(
+            'UPDATE users SET name = ?, email = ?, phone_number = ?, role = ? WHERE id = ?',
+            [name, email, phone_number, role, userId]
+        );
+        res.json({ message: '사용자 정보가 업데이트되었습니다.' });
+    } catch (error) {
+        console.error('사용자 업데이트 오류:', error);
+        res.status(500).json({ message: '사용자 정보 업데이트에 실패했습니다.' });
+    }
+});
+
+// 사용자 삭제
+app.delete('/api/users/:userId', async (req, res) => {
+    const { userId } = req.params;
+
+    try {
+        await dbPool.query('DELETE FROM users WHERE id = ?', [userId]);
+        res.json({ message: '사용자가 삭제되었습니다.' });
+    } catch (error) {
+        console.error('사용자 삭제 오류:', error);
+        res.status(500).json({ message: '사용자 삭제에 실패했습니다.' });
+    }
+});
+
 app.listen(port, () => {
     console.log(`Server running on port ${port}`);
 });
