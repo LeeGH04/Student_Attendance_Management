@@ -196,3 +196,20 @@
     color: #666;
     margin-top: 5px;
 }
+.childSelector {
+    margin-bottom: 20px;
+}
+
+.selectBox {
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    width: 200px;
+    margin-bottom: 20px;
+}
+
+.selectBox:focus {
+    outline: none;
+    border-color: #4CAF50;
+    box-shadow: 0 0 0 2px rgba(74, 175, 80, 0.2);
+}

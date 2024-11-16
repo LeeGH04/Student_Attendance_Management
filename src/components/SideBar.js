@@ -20,7 +20,14 @@ const SideBar = () => {
 
     return (
         <div className={styles.sidebar}>
-            <h2>ㅇㅇ 학교</h2>
+
+            <button onClick={() => {
+                const userRole = sessionStorage.getItem('userRole');
+                navigate(`/${userRole}-main`);
+            }}>
+                <span className={styles.schoolTitle}>ㅇㅇ 학교</span>
+            </button>
+
             <nav className={styles.sidebarNav}>
                 <div className={styles.sidebarCategory}>Attendance</div>
                 <ul>

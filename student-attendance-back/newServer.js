@@ -332,7 +332,26 @@ app.post('/api/attendance/report', async (req, res) => {
     }
 });
 
-// 주차별 출석 현황 조회 API 추가
+// 서버에 API 추가
+app.get('/api/parent/children/:parentId', async (req, res) => {
+    const { parentId } = req.params;
+
+    try {
+        // 자녀 목록 조회
+        const [children] = await dbPool.query(`
+            SELECT u.* 
+            FROM users u
+            JOIN ParentChild pc ON u.id = pc.student_id
+            WHERE pc.parent_id = ?`,
+            [parentId]
+        );
+
+        res.json(children);
+    } catch (error) {
+        console.error('자녀 목록 조회 오류:', error);
+        res.status(500).json({ message: '자녀 목록을 불러오는데 실패했습니다.' });
+    }
+});
 
 // 주차별 출석 현황 조회 API 추가
 app.get('/api/attendance/report/:classId/:week', async (req, res) => {

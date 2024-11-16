@@ -11,25 +11,48 @@ const AttendanceReportPage = () => {
         details: [],
         summary: []
     });
+    const [children, setChildren] = useState([]);
+    const [selectedChild, setSelectedChild] = useState(null);
     const [isLoading, setIsLoading] = useState(true);
-    const studentId = sessionStorage.getItem('userId');
+    const userId = sessionStorage.getItem('userId');
+    const userRole = sessionStorage.getItem('userRole');
 
+    // 부모인 경우 자녀 목록 조회
+    useEffect(() => {
+        const fetchChildren = async () => {
+            if (userRole === 'parent') {
+                try {
+                    const response = await axios.get(`http://localhost:5002/api/parent/children/${userId}`);
+                    setChildren(response.data);
+                    if (response.data.length > 0) {
+                        setSelectedChild(response.data[0].id);  // 첫 번째 자녀 선택
+                    }
+                } catch (error) {
+                    console.error('자녀 목록 조회 실패:', error);
+                }
+            }
+        };
+
+        fetchChildren();
+    }, [userId, userRole]);
+
+    // 출석 데이터 조회
     useEffect(() => {
         const fetchAttendanceData = async () => {
-            if (!studentId) return;
+            const studentToCheck = userRole === 'parent' ? selectedChild : userId;
+            if (!studentToCheck) return;
 
             try {
-                console.log("Fetching data for student:", studentId);
+                setIsLoading(true);
+                console.log("Fetching data for student:", studentToCheck);
+
                 const response = await axios.get(
-                    `http://localhost:5002/api/attendance/report/student/${studentId}`
+                    `http://localhost:5002/api/attendance/report/student/${studentToCheck}`
                 );
-                console.log("Raw response:", response);
 
                 if (response.data && response.data.success) {
-                    console.log("Setting attendance data:", response.data.data);
                     setAttendanceData(response.data.data);
                 } else {
-                    console.log("No data or error in response:", response.data);
                     setAttendanceData({ details: [], summary: [] });
                 }
             } catch (error) {
@@ -41,7 +64,7 @@ const AttendanceReportPage = () => {
         };
 
         fetchAttendanceData();
-    }, [studentId]);
+    }, [userId, userRole, selectedChild]);
 
     // 데이터 로드 중
     if (isLoading) {
@@ -84,7 +107,22 @@ const AttendanceReportPage = () => {
         <div className="main-container">
             <div className="content-container">
                 <h1 className="title">출석 보고서</h1>
-
+                {/* 부모인 경우 자녀 선택 드롭다운 추가 */}
+                {userRole === 'parent' && (
+                    <div className={styles.childSelector}>
+                        <select
+                            value={selectedChild || ''}
+                            onChange={(e) => setSelectedChild(e.target.value)}
+                            className={styles.selectBox}
+                        >
+                            {children.map(child => (
+                                <option key={child.id} value={child.id}>
+                                    {child.name} ({child.id})
+                                </option>
+                            ))}
+                        </select>
+                    </div>
+                )}
                 <div className={styles.container}>
                     <div className={styles.leftSection}>
                         <h2>상세 출결 현황</h2>
