@@ -1,199 +1,164 @@
-/* NotificationsPage.module.css */
-
-/* 검색 섹션 */
-.searchContainer {
+.header {
   display: flex;
+  justify-content: space-between;
   align-items: center;
-  margin-bottom: 20px;
+  margin-bottom: 2rem;
 }
 
-.searchLabel {
-  margin-right: 10px;
-  font-size: 16px;
-}
-
-.searchSelect {
-  padding: 8px;
-  font-size: 16px;
-  margin-right: 10px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-}
-
-.searchInput {
-  flex: 1;
-  padding: 8px;
-  font-size: 16px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-}
-
-.searchButton {
-  padding: 8px 12px;
-  font-size: 16px;
-  cursor: pointer;
-  background-color: #333;
+.sendButton {
+  padding: 0.5rem 1rem;
+  background-color: #4CAF50;
   color: white;
   border: none;
   border-radius: 4px;
+  cursor: pointer;
 }
 
-.searchButton:hover {
-  background-color: #555;
-}
-
-/* 알림판 스타일 */
-.noticeBoard {
-  background-color: #e0e0e0;
-  width: 100%;
-  height: 500px;
-  border-radius: 8px;
-}
-
-.textWrapper {
-  font-size: 40px;
-}
-
-/* 테이블 스타일 */
 .notificationTable {
-  width: 80%;
+  width: 100%;
   border-collapse: collapse;
-  margin: 40px auto;
-  text-align: center;
+  margin-top: 1rem;
+  background-color: white;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .notificationTable th,
 .notificationTable td {
-  border: 1px solid #333;
+  padding: 1rem;
+  text-align: left;
+  border-bottom: 1px solid #ddd;
 }
 
-/* 테이블 열 너비 설정 */
-.notificationTable td:nth-child(1) {
-  width: 5%;
+.notificationTable th {
+  background-color: #f5f5f5;
+  font-weight: 600;
 }
 
-.notificationTable th:nth-child(2),
-.notificationTable td:nth-child(2) {
-  width: 10%;
+.notificationTable tr {
+  cursor: pointer;
+  transition: background-color 0.2s;
 }
 
-.notificationTable th:nth-child(3),
-.notificationTable td:nth-child(3) {
-  width: 50%;
+.notificationTable tr:hover {
+  background-color: #f5f5f5;
 }
 
-.notificationTable th:nth-child(4),
-.notificationTable td:nth-child(4) {
-  width: 5%;
+.unread {
+  font-weight: bold;
+  background-color: #e3f2fd;
 }
 
-.notificationTable th:nth-child(5),
-.notificationTable td:nth-child(5) {
-  width: 5%;
+.titleCell {
+  max-width: 200px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
-.notificationTable th:nth-child(6),
-.notificationTable td:nth-child(6) {
-  width: 15%;
-}
 .modal {
   position: fixed;
   top: 0;
   left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0, 0, 0, 0.5);
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
   display: flex;
   justify-content: center;
   align-items: center;
+  z-index: 1000;
 }
 
 .modalContent {
-  background: white;
-  padding: 20px;
+  background-color: white;
+  padding: 2rem;
   border-radius: 8px;
-  width: 80%;
-  max-width: 500px;
+  width: 90%;
+  max-width: 600px;
+  max-height: 80vh;
+  overflow-y: auto;
 }
 
-.modalContent textarea {
-  width: 100%;
-  min-height: 100px;
-  margin: 10px 0;
-  padding: 10px;
+.modalTitle {
+  margin: 0 0 1rem 0;
+  font-size: 1.5rem;
+  color: #333;
+}
+
+.modalInfo {
+  margin-bottom: 1.5rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid #ddd;
+  color: #666;
+}
+
+.modalInfo p {
+  margin: 0.5rem 0;
+}
+
+.modalBody {
+  margin-bottom: 2rem;
+  line-height: 1.5;
+  white-space: pre-wrap;
 }
 
 .modalButtons {
   display: flex;
   justify-content: flex-end;
-  gap: 10px;
+  gap: 1rem;
+  margin-top: 1.5rem;
 }
 
-.notificationTable button {
-  padding: 5px 10px;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  background-color: #007bff;
-  color: white;
-}
-
-.notificationTable button:hover {
-  background-color: #0056b3;
-}
-
-.header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 20px;
-}
-
-.sendButton {
-  padding: 8px 16px;
-  background-color: #28a745;
-  color: white;
+.modalButtons button {
+  padding: 0.5rem 1rem;
   border: none;
   border-radius: 4px;
   cursor: pointer;
 }
 
-.sendButton:hover {
-  background-color: #218838;
+.modalButtons button:first-child {
+  background-color: #f5f5f5;
+}
+
+.modalButtons button:last-child {
+  background-color: #4CAF50;
+  color: white;
 }
 
 .inputGroup {
-  margin-bottom: 15px;
+  margin-bottom: 1.5rem;
 }
 
 .inputGroup label {
   display: block;
-  margin-bottom: 5px;
-  font-weight: bold;
+  margin-bottom: 0.5rem;
+  font-weight: 500;
 }
 
 .inputGroup input,
 .inputGroup textarea {
   width: 100%;
-  padding: 8px;
+  padding: 0.5rem;
   border: 1px solid #ddd;
   border-radius: 4px;
+}
+
+.inputGroup textarea {
+  min-height: 100px;
+  resize: vertical;
 }
 
 .searchResults {
-  position: absolute;
-  background: white;
+  list-style: none;
+  padding: 0;
+  margin: 0;
   border: 1px solid #ddd;
   border-radius: 4px;
-  margin-top: 5px;
   max-height: 200px;
   overflow-y: auto;
-  width: 100%;
-  z-index: 1000;
 }
 
 .searchResults li {
-  padding: 8px;
+  padding: 0.5rem;
   cursor: pointer;
 }
 

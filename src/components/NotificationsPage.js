@@ -7,6 +7,7 @@ const NotificationsPage = () => {
   const [notifications, setNotifications] = useState([]);
   const [replyModal, setReplyModal] = useState({ show: false, to: null });
   const [sendModal, setSendModal] = useState(false);
+  const [viewModal, setViewModal] = useState({ show: false, notification: null });
   const [replyContent, setReplyContent] = useState('');
   const [newNotification, setNewNotification] = useState({
     receiver_id: '',
@@ -19,12 +20,8 @@ const NotificationsPage = () => {
 
   useEffect(() => {
     fetchNotifications();
-    if (Notification.permission === 'default') {
-      Notification.requestPermission();
-    }
   }, []);
 
-  // 사용자 검색 기능
   useEffect(() => {
     const searchUsers = async () => {
       if (searchQuery.length < 2) {
@@ -53,27 +50,10 @@ const NotificationsPage = () => {
     }
   };
 
-  const handleSendNotification = async () => {
-    try {
-      await axios.post('http://localhost:5002/api/notifications/send', {
-        sender_id: userId,
-        ...newNotification
-      });
-
-      setSendModal(false);
-      setNewNotification({ receiver_id: '', title: '', content: '' });
-      setSearchQuery('');
-      alert('알림이 전송되었습니다.');
-    } catch (error) {
-      console.error('알림 전송 실패:', error);
-      alert('알림 전송에 실패했습니다.');
-    }
-  };
-
   const handleRead = async (notificationId) => {
     try {
       await axios.put(`http://localhost:5002/api/notifications/${notificationId}/read`);
-      fetchNotifications();  // 목록 새로고침
+      fetchNotifications();
     } catch (error) {
       console.error('읽음 처리 실패:', error);
     }
@@ -96,9 +76,33 @@ const NotificationsPage = () => {
     }
   };
 
+  const handleSendNotification = async () => {
+    try {
+      await axios.post('http://localhost:5002/api/notifications/send', {
+        sender_id: userId,
+        ...newNotification
+      });
+
+      setSendModal(false);
+      setNewNotification({ receiver_id: '', title: '', content: '' });
+      setSearchQuery('');
+      alert('알림이 전송되었습니다.');
+    } catch (error) {
+      console.error('알림 전송 실패:', error);
+      alert('알림 전송에 실패했습니다.');
+    }
+  };
+
+  const handleViewNotification = async (notification) => {
+    if (!notification.is_read) {
+      await handleRead(notification.notification_id);
+    }
+    setViewModal({ show: true, notification });
+  };
+
   const formatDate = (dateString) => {
     const date = new Date(dateString);
-    return date.toLocaleDateString();
+    return date.toLocaleDateString() + ' ' + date.toLocaleTimeString();
   };
 
   return (
@@ -127,25 +131,21 @@ const NotificationsPage = () => {
             </thead>
             <tbody>
             {notifications.map((notification, index) => (
-                <tr key={notification.notification_id}>
+                <tr
+                    key={notification.notification_id}
+                    className={!notification.is_read ? styles.unread : ''}
+                    onClick={() => handleViewNotification(notification)}
+                >
                   <td>{notifications.length - index}</td>
                   <td>{notification.sender_name}</td>
-                  <td>{notification.title}</td>
-                  <td>
-                    {notification.is_read ? (
-                        '읽음'
-                    ) : (
-                        <button onClick={() => handleRead(notification.notification_id)}>
-                          읽기
-                        </button>
-                    )}
-                  </td>
+                  <td className={styles.titleCell}>{notification.title}</td>
+                  <td>{notification.is_read ? '읽음' : '안읽음'}</td>
                   <td>
                     <button
-                        onClick={() => setReplyModal({
-                          show: true,
-                          to: notification.sender_id
-                        })}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setReplyModal({ show: true, to: notification.sender_id });
+                        }}
                     >
                       답장
                     </button>
@@ -155,11 +155,39 @@ const NotificationsPage = () => {
             ))}
             </tbody>
           </table>
+
+          {/* 알림 내용 보기 모달 */}
+          {viewModal.show && viewModal.notification && (
+              <div className={styles.modal} onClick={() => setViewModal({ show: false, notification: null })}>
+                <div className={styles.modalContent} onClick={e => e.stopPropagation()}>
+                  <h2 className={styles.modalTitle}>{viewModal.notification.title}</h2>
+                  <div className={styles.modalInfo}>
+                    <p>보낸사람: {viewModal.notification.sender_name}</p>
+                    <p>보낸시간: {formatDate(viewModal.notification.created_at)}</p>
+                  </div>
+                  <div className={styles.modalBody}>
+                    {viewModal.notification.content}
+                  </div>
+                  <div className={styles.modalButtons}>
+                    <button onClick={() => setViewModal({ show: false, notification: null })}>
+                      닫기
+                    </button>
+                    <button onClick={() => {
+                      setViewModal({ show: false, notification: null });
+                      setReplyModal({ show: true, to: viewModal.notification.sender_id });
+                    }}>
+                      답장하기
+                    </button>
+                  </div>
+                </div>
+              </div>
+          )}
+
+          {/* 기존 모달들 */}
           {sendModal && (
               <div className={styles.modal}>
                 <div className={styles.modalContent}>
                   <h2>새 알림 작성</h2>
-
                   <div className={styles.inputGroup}>
                     <label>받는 사람</label>
                     <input
@@ -188,7 +216,6 @@ const NotificationsPage = () => {
                         </ul>
                     )}
                   </div>
-
                   <div className={styles.inputGroup}>
                     <label>제목</label>
                     <input
@@ -201,7 +228,6 @@ const NotificationsPage = () => {
                         placeholder="제목을 입력하세요"
                     />
                   </div>
-
                   <div className={styles.inputGroup}>
                     <label>내용</label>
                     <textarea
@@ -213,22 +239,18 @@ const NotificationsPage = () => {
                         placeholder="내용을 입력하세요"
                     />
                   </div>
-
                   <div className={styles.modalButtons}>
-                    <button onClick={handleSendNotification}>
-                      전송
-                    </button>
+                    <button onClick={handleSendNotification}>전송</button>
                     <button onClick={() => {
                       setSendModal(false);
                       setNewNotification({ receiver_id: '', title: '', content: '' });
                       setSearchQuery('');
-                    }}>
-                      취소
-                    </button>
+                    }}>취소</button>
                   </div>
                 </div>
               </div>
           )}
+
           {replyModal.show && (
               <div className={styles.modal}>
                 <div className={styles.modalContent}>
@@ -239,9 +261,7 @@ const NotificationsPage = () => {
                       placeholder="답장 내용을 입력하세요"
                   />
                   <div className={styles.modalButtons}>
-                    <button onClick={() => handleReply(replyModal.to)}>
-                      전송
-                    </button>
+                    <button onClick={() => handleReply(replyModal.to)}>전송</button>
                     <button onClick={() => setReplyModal({ show: false, to: null })}>
                       취소
                     </button>

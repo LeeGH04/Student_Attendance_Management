@@ -35,6 +35,20 @@ const dbPool = mysql.createPool({
     database: process.env.DB_NAME || 'Attendance',
 });
 
+
+const authenticateToken = (req, res, next) => {
+    const token = req.headers['authorization'] && req.headers['authorization'].split(' ')[1];
+
+    if (!token) return res.status(403).json({ success: false, message: '토큰이 없습니다.' });
+
+    jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
+        if (err) return res.status(403).json({ success: false, message: '유효하지 않은 토큰입니다.' });
+
+        req.user = user;
+        next();
+    });
+};
+// =============== 인증 관련 API ===============
 // 로그인 라우트 (학번으로 로그인)
 app.post('/login', async (req, res) => {
     const { id, password } = req.body;
@@ -70,18 +84,7 @@ app.post('/login', async (req, res) => {
     }
 });
 
-const authenticateToken = (req, res, next) => {
-    const token = req.headers['authorization'] && req.headers['authorization'].split(' ')[1];
-
-    if (!token) return res.status(403).json({ success: false, message: '토큰이 없습니다.' });
-
-    jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
-        if (err) return res.status(403).json({ success: false, message: '유효하지 않은 토큰입니다.' });
-
-        req.user = user;
-        next();
-    });
-};
+// =============== 사용자 관리 API ===============
 
 app.get('/user/profile', authenticateToken, async (req, res) => {
     const { id } = req.user;
@@ -106,6 +109,96 @@ app.get('/user/profile', authenticateToken, async (req, res) => {
         res.status(500).json({ success: false, message: '사용자 정보를 가져오는 중 오류가 발생했습니다.' });
     }
 });
+
+
+// 사용자 정보 업데이트 API 추가
+app.post('/updateUserData', authenticateToken, async (req, res) => {
+    const { email, phone_number, password } = req.body;
+    const { id } = req.user;
+
+    try {
+        // SQL 쿼리로 사용자 정보 업데이트
+        const [result] = await dbPool.execute(
+            'UPDATE users SET email = ?, phone_number = ?, password = ? WHERE id = ?',
+            [email, phone_number, password, id]
+        );
+
+        if (result.affectedRows === 0) {
+            return res.status(404).json({ success: false, message: '사용자 정보를 찾을 수 없습니다.' });
+        }
+
+        res.json({ success: true, message: '정보가 성공적으로 업데이트되었습니다.' });
+    } catch (error) {
+        console.error('업데이트 중 오류 발생:', error);
+        res.status(500).json({ success: false, message: '정보를 업데이트하는 중 오류가 발생했습니다.' });
+    }
+});
+
+// 사용자 검색 API
+app.get('/api/users/search', async (req, res) => {
+    const { query } = req.query;
+
+    try {
+        const [users] = await dbPool.query(
+            `SELECT id, name, role 
+             FROM users 
+             WHERE name LIKE ? OR id LIKE ?
+             LIMIT 10`,
+            [`%${query}%`, `%${query}%`]
+        );
+
+        res.json(users);
+    } catch (error) {
+        console.error('사용자 검색 오류:', error);
+        res.status(500).json({ message: '사용자 검색에 실패했습니다.' });
+    }
+});
+
+// 사용자 목록 조회
+app.get('/api/users', async (req, res) => {
+    try {
+        const [rows] = await dbPool.query('SELECT * FROM users ORDER BY id');
+        res.json(rows);
+    } catch (error) {
+        console.error('사용자 조회 오류:', error);
+        res.status(500).json({ message: '사용자 목록 조회에 실패했습니다.' });
+    }
+});
+
+// 사용자 정보 업데이트
+app.put('/api/users/:userId', async (req, res) => {
+    const { userId } = req.params;
+    const { name, email, phone_number, role } = req.body;
+
+    try {
+        await dbPool.query(
+            'UPDATE users SET name = ?, email = ?, phone_number = ?, role = ? WHERE id = ?',
+            [name, email, phone_number, role, userId]
+        );
+        res.json({ message: '사용자 정보가 업데이트되었습니다.' });
+    } catch (error) {
+        console.error('사용자 업데이트 오류:', error);
+        res.status(500).json({ message: '사용자 정보 업데이트에 실패했습니다.' });
+    }
+});
+
+// 사용자 삭제
+app.delete('/api/users/:userId', async (req, res) => {
+    const { userId } = req.params;
+
+    try {
+        await dbPool.query('DELETE FROM users WHERE id = ?', [userId]);
+        res.json({ message: '사용자가 삭제되었습니다.' });
+    } catch (error) {
+        console.error('사용자 삭제 오류:', error);
+        res.status(500).json({ message: '사용자 삭제에 실패했습니다.' });
+    }
+});
+
+
+// =============== 출석 관리 API ===============
+
+
 app.get('/api/attendance/report/student/:studentId', async (req, res) => {
     const studentId = req.params.studentId;
     console.log("Request received for studentId:", studentId);
@@ -173,86 +266,6 @@ app.get('/api/attendance/report/student/:studentId', async (req, res) => {
         });
     }
 });
-// 사용자 정보 업데이트 API 추가
-app.post('/updateUserData', authenticateToken, async (req, res) => {
-    const { email, phone_number, password } = req.body;
-    const { id } = req.user;
-
-    try {
-        // SQL 쿼리로 사용자 정보 업데이트
-        const [result] = await dbPool.execute(
-            'UPDATE users SET email = ?, phone_number = ?, password = ? WHERE id = ?',
-            [email, phone_number, password, id]
-        );
-
-        if (result.affectedRows === 0) {
-            return res.status(404).json({ success: false, message: '사용자 정보를 찾을 수 없습니다.' });
-        }
-
-        res.json({ success: true, message: '정보가 성공적으로 업데이트되었습니다.' });
-    } catch (error) {
-        console.error('업데이트 중 오류 발생:', error);
-        res.status(500).json({ success: false, message: '정보를 업데이트하는 중 오류가 발생했습니다.' });
-    }
-});
-
-// newServer.js에 추가할 API:
-app.get('/api/timetable/:studentId', async (req, res) => {
-    const { studentId } = req.params;
-
-    try {
-        const query = `
-           SELECT t.*, c.class_name
-           FROM Timetable t
-           JOIN Classes c ON t.class_id = c.class_id
-           JOIN Class_Students cs ON c.class_id = cs.class_id
-           WHERE cs.student_id = ?
-           ORDER BY t.day_of_week, t.start_time
-       `;
-
-        const [rows] = await dbPool.query(query, [studentId]);
-        res.json(rows);
-    } catch (error) {
-        console.error('시간표 조회 오류:', error);
-        res.status(500).json({
-            success: false,
-            message: '시간표를 불러오는데 실패했습니다.'
-        });
-    }
-});
-
-// 교수의 수업 목록 조회
-app.get('/api/professor/classes/:professorId', async (req, res) => {
-    const { professorId } = req.params;
-    try {
-        const [rows] = await dbPool.query(
-            'SELECT * FROM Classes WHERE professor_id = ?',
-            [professorId]
-        );
-        res.json(rows);
-    } catch (error) {
-        console.error('수업 목록 조회 오류:', error);
-        res.status(500).json({ message: '수업 목록 조회 실패' });
-    }
-});
-
-// 수업의 학생 목록 조회
-app.get('/api/class/students/:classId', async (req, res) => {
-    const { classId } = req.params;
-    try {
-        const [rows] = await dbPool.query(
-            `SELECT u.* FROM users u 
-            JOIN Class_Students cs ON u.id = cs.student_id 
-            WHERE cs.class_id = ?`,
-            [classId]
-        );
-        res.json(rows);
-    } catch (error) {
-        console.error('학생 목록 조회 오류:', error);
-        res.status(500).json({ message: '학생 목록 조회 실패' });
-    }
-});
-
 // 출석 보고서 저장
 app.post('/api/attendance/report', async (req, res) => {
     const { class_id, week, students, classCode } = req.body;
@@ -332,26 +345,7 @@ app.post('/api/attendance/report', async (req, res) => {
     }
 });
 
-// 서버에 API 추가
-app.get('/api/parent/children/:parentId', async (req, res) => {
-    const { parentId } = req.params;
 
-    try {
-        // 자녀 목록 조회
-        const [children] = await dbPool.query(`
-            SELECT u.* 
-            FROM users u
-            JOIN ParentChild pc ON u.id = pc.student_id
-            WHERE pc.parent_id = ?`,
-            [parentId]
-        );
-
-        res.json(children);
-    } catch (error) {
-        console.error('자녀 목록 조회 오류:', error);
-        res.status(500).json({ message: '자녀 목록을 불러오는데 실패했습니다.' });
-    }
-});
 
 // 주차별 출석 현황 조회 API 추가
 app.get('/api/attendance/report/:classId/:week', async (req, res) => {
@@ -371,42 +365,30 @@ app.get('/api/attendance/report/:classId/:week', async (req, res) => {
         res.status(500).json({ message: '출석 현황 조회 실패' });
     }
 });
-// newServer.js에 추가
+// newServer.js에 추가해야 할 API
 
-// 학생의 수강 중인 수업 목록 조회
-// newServer.js에서 수정
-// newServer.js에서 수정
-app.get('/api/student/classes/:studentId', async (req, res) => {
+// 학생의 전체 출석 통계를 가져오는 API
+app.get('/api/attendance/summary/:studentId', async (req, res) => {
     const { studentId } = req.params;
 
     try {
-        const query = `
-            SELECT DISTINCT
-                c.class_id,
-                c.class_name,
-                t.start_time,
-                t.end_time,
-                t.day_of_week,
-                t.room_number
-            FROM Classes c
-                     JOIN Class_Students cs ON c.class_id = cs.class_id
-                     LEFT JOIN Timetable t ON c.class_id = t.class_id
-            WHERE cs.student_id = ?
-            ORDER BY t.day_of_week, t.start_time;
-        `;
+        const [results] = await dbPool.query(`
+            SELECT 
+                SUM(CASE WHEN attendance_status = 'present' THEN 1 ELSE 0 END) as present,
+                SUM(CASE WHEN attendance_status = 'late' THEN 1 ELSE 0 END) as late,
+                SUM(CASE WHEN attendance_status = 'absent' THEN 1 ELSE 0 END) as absent,
+                SUM(CASE WHEN attendance_status = 'early_leave' THEN 1 ELSE 0 END) as early_leave
+            FROM ClassWeekly_Students
+            WHERE student_id = ?
+        `, [studentId]);
 
-        const [rows] = await dbPool.query(query, [studentId]);
-        console.log('Fetched classes:', rows);  // 디버깅용
-        res.json(rows);
+        res.json(results[0]);
     } catch (error) {
-        console.error('수업 목록 조회 오류:', error);
-        res.status(500).json({
-            success: false,
-            message: '수업 목록을 불러오는데 실패했습니다.'
-        });
+        console.error('출석 통계 조회 실패:', error);
+        res.status(500).json({ message: '출석 통계 조회에 실패했습니다.' });
     }
 });
-// 출석 체크
+// newServer.js에 추가
 // newServer.js - API 수정
 app.post('/api/attendance/check', async (req, res) => {
     const { studentId, classId, week, attendanceCode } = req.body;
@@ -527,6 +509,109 @@ app.post('/api/attendance/generate-code', async (req, res) => {
         });
     }
 });
+
+
+// 학생의 수강 중인 수업 목록 조회
+// newServer.js에서 수정
+// newServer.js에서 수정
+app.get('/api/student/classes/:studentId', async (req, res) => {
+    const { studentId } = req.params;
+
+    try {
+        const query = `
+            SELECT DISTINCT
+                c.class_id,
+                c.class_name,
+                t.start_time,
+                t.end_time,
+                t.day_of_week,
+                t.room_number
+            FROM Classes c
+                     JOIN Class_Students cs ON c.class_id = cs.class_id
+                     LEFT JOIN Timetable t ON c.class_id = t.class_id
+            WHERE cs.student_id = ?
+            ORDER BY t.day_of_week, t.start_time;
+        `;
+
+        const [rows] = await dbPool.query(query, [studentId]);
+        console.log('Fetched classes:', rows);  // 디버깅용
+        res.json(rows);
+    } catch (error) {
+        console.error('수업 목록 조회 오류:', error);
+        res.status(500).json({
+            success: false,
+            message: '수업 목록을 불러오는데 실패했습니다.'
+        });
+    }
+});
+
+
+
+
+
+// =============== 수업 관리 API ===============
+
+// newServer.js에 추가할 API:
+app.get('/api/timetable/:studentId', async (req, res) => {
+    const { studentId } = req.params;
+
+    try {
+        const query = `
+           SELECT t.*, c.class_name
+           FROM Timetable t
+           JOIN Classes c ON t.class_id = c.class_id
+           JOIN Class_Students cs ON c.class_id = cs.class_id
+           WHERE cs.student_id = ?
+           ORDER BY t.day_of_week, t.start_time
+       `;
+
+        const [rows] = await dbPool.query(query, [studentId]);
+        res.json(rows);
+    } catch (error) {
+        console.error('시간표 조회 오류:', error);
+        res.status(500).json({
+            success: false,
+            message: '시간표를 불러오는데 실패했습니다.'
+        });
+    }
+});
+
+// 교수의 수업 목록 조회
+app.get('/api/professor/classes/:professorId', async (req, res) => {
+    const { professorId } = req.params;
+    try {
+        const [rows] = await dbPool.query(
+            'SELECT * FROM Classes WHERE professor_id = ?',
+            [professorId]
+        );
+        res.json(rows);
+    } catch (error) {
+        console.error('수업 목록 조회 오류:', error);
+        res.status(500).json({ message: '수업 목록 조회 실패' });
+    }
+});
+
+// 수업의 학생 목록 조회
+app.get('/api/class/students/:classId', async (req, res) => {
+    const { classId } = req.params;
+    try {
+        const [rows] = await dbPool.query(
+            `SELECT u.* FROM users u 
+            JOIN Class_Students cs ON u.id = cs.student_id 
+            WHERE cs.class_id = ?`,
+            [classId]
+        );
+        res.json(rows);
+    } catch (error) {
+        console.error('학생 목록 조회 오류:', error);
+        res.status(500).json({ message: '학생 목록 조회 실패' });
+    }
+});
+
+
+// =============== 알림 관리 API ===============
+
+
 // newServer.js에 추가
 app.get('/api/notifications/:userId', async (req, res) => {
     const { userId } = req.params;
@@ -615,64 +700,29 @@ app.post('/api/notifications/send', async (req, res) => {
     }
 });
 
-// 사용자 검색 API
-app.get('/api/users/search', async (req, res) => {
-    const { query } = req.query;
+
+
+// =============== 학부모 관련 API ===============
+
+
+// 서버에 API 추가
+app.get('/api/parent/children/:parentId', async (req, res) => {
+    const { parentId } = req.params;
 
     try {
-        const [users] = await dbPool.query(
-            `SELECT id, name, role 
-             FROM users 
-             WHERE name LIKE ? OR id LIKE ?
-             LIMIT 10`,
-            [`%${query}%`, `%${query}%`]
+        // 자녀 목록 조회
+        const [children] = await dbPool.query(`
+            SELECT u.* 
+            FROM users u
+            JOIN ParentChild pc ON u.id = pc.student_id
+            WHERE pc.parent_id = ?`,
+            [parentId]
         );
 
-        res.json(users);
+        res.json(children);
     } catch (error) {
-        console.error('사용자 검색 오류:', error);
-        res.status(500).json({ message: '사용자 검색에 실패했습니다.' });
-    }
-});
-
-// 사용자 목록 조회
-app.get('/api/users', async (req, res) => {
-    try {
-        const [rows] = await dbPool.query('SELECT * FROM users ORDER BY id');
-        res.json(rows);
-    } catch (error) {
-        console.error('사용자 조회 오류:', error);
-        res.status(500).json({ message: '사용자 목록 조회에 실패했습니다.' });
-    }
-});
-
-// 사용자 정보 업데이트
-app.put('/api/users/:userId', async (req, res) => {
-    const { userId } = req.params;
-    const { name, email, phone_number, role } = req.body;
-
-    try {
-        await dbPool.query(
-            'UPDATE users SET name = ?, email = ?, phone_number = ?, role = ? WHERE id = ?',
-            [name, email, phone_number, role, userId]
-        );
-        res.json({ message: '사용자 정보가 업데이트되었습니다.' });
-    } catch (error) {
-        console.error('사용자 업데이트 오류:', error);
-        res.status(500).json({ message: '사용자 정보 업데이트에 실패했습니다.' });
-    }
-});
-
-// 사용자 삭제
-app.delete('/api/users/:userId', async (req, res) => {
-    const { userId } = req.params;
-
-    try {
-        await dbPool.query('DELETE FROM users WHERE id = ?', [userId]);
-        res.json({ message: '사용자가 삭제되었습니다.' });
-    } catch (error) {
-        console.error('사용자 삭제 오류:', error);
-        res.status(500).json({ message: '사용자 삭제에 실패했습니다.' });
+        console.error('자녀 목록 조회 오류:', error);
+        res.status(500).json({ message: '자녀 목록을 불러오는데 실패했습니다.' });
     }
 });
 
