@@ -106,7 +106,73 @@ app.get('/user/profile', authenticateToken, async (req, res) => {
         res.status(500).json({ success: false, message: '사용자 정보를 가져오는 중 오류가 발생했습니다.' });
     }
 });
+app.get('/api/attendance/report/student/:studentId', async (req, res) => {
+    const studentId = req.params.studentId;
+    console.log("Request received for studentId:", studentId);
 
+    // 먼저 간단한 응답 테스트
+    try {
+        // 1. 기본 쿼리 테스트
+        const [testData] = await dbPool.query(
+            'SELECT * FROM ClassWeekly_Students WHERE student_id = ?',
+            [studentId]
+        );
+        console.log("Test data:", testData);
+
+        // 2. 실제 상세 데이터 쿼리
+        const [details] = await dbPool.query(`
+            SELECT 
+                c.class_name as courseName,
+                cws.student_id as studentId,
+                cws.week,
+                cws.attendance_status,
+                u.name as studentName
+            FROM ClassWeekly_Students cws
+            JOIN Classes c ON cws.class_id = c.class_id
+            JOIN users u ON u.id = cws.student_id
+            WHERE cws.student_id = ?`,
+            [studentId]
+        );
+        console.log("Detail data:", details);
+
+        // 3. 통계 데이터 쿼리
+        const [summary] = await dbPool.query(`
+            SELECT 
+                c.class_name as courseName,
+                SUM(case when attendance_status = 'present' then 1 else 0 end) as attendance,
+                SUM(case when attendance_status = 'late' then 1 else 0 end) as tardiness,
+                SUM(case when attendance_status = 'absent' then 1 else 0 end) as absence
+            FROM ClassWeekly_Students cws
+            JOIN Classes c ON cws.class_id = c.class_id
+            WHERE student_id = ?
+            GROUP BY c.class_name`,
+            [studentId]
+        );
+        console.log("Summary data:", summary);
+
+        // 4. 최종 응답 객체 생성
+        const response = {
+            success: true,
+            data: {
+                details: details,
+                summary: summary
+            }
+        };
+        console.log("Sending response:", response);
+
+        // 5. 응답 전송
+        res.json(response);
+
+    } catch (error) {
+        console.error("Error occurred:", error);
+        res.status(500).json({
+            success: false,
+            error: error.message,
+            details: [],
+            summary: []
+        });
+    }
+});
 // 사용자 정보 업데이트 API 추가
 app.post('/updateUserData', authenticateToken, async (req, res) => {
     const { email, phone_number, password } = req.body;
@@ -276,6 +342,8 @@ app.get('/api/attendance/report/:classId/:week', async (req, res) => {
         res.status(500).json({ message: '출석 현황 조회 실패' });
     }
 });
+
+
 
 app.listen(port, () => {
     console.log(`Server running on port ${port}`);
