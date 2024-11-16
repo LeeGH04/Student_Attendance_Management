@@ -257,10 +257,14 @@ app.get('/api/class/students/:classId', async (req, res) => {
 app.post('/api/attendance/report', async (req, res) => {
     const { class_id, week, students, classCode } = req.body;
 
+    // 트랜잭션 시작
+    const connection = await dbPool.getConnection();
+    await connection.beginTransaction();
+
     try {
-        // 1. 기존 출석 기록 삭제
-        await dbPool.query(
-            `DELETE FROM ClassWeekly_Students 
+        // 1. 해당 주차의 모든 출석 기록 삭제
+        await connection.query(
+            `DELETE FROM ClassWeekly_Students
              WHERE class_id = ? AND week = ?`,
             [class_id, week]
         );
@@ -268,41 +272,63 @@ app.post('/api/attendance/report', async (req, res) => {
         // 2. 코드가 있는 경우 처리
         if (classCode) {
             // 기존 활성 코드 비활성화
-            await dbPool.query(
-                `UPDATE Class_Codes 
-                 SET is_active = FALSE 
-                 WHERE class_id = ?`,
-                [class_id]
+            await connection.query(
+                `UPDATE Class_Codes
+                 SET is_active = FALSE
+                 WHERE class_id = ? AND week = ?`,
+                [class_id, week]
             );
 
             // 새 코드 생성
-            await dbPool.query(
-                `INSERT INTO Class_Codes 
-                 (class_id, week, attendance_code, expired_at) 
-                 VALUES (?, ?, ?, DATE_ADD(NOW(), INTERVAL 5 MINUTE))`,
+            await connection.query(
+                `INSERT INTO Class_Codes
+                     (class_id, week, attendance_code, expired_at)
+                 VALUES (?, ?, ?, DATE_ADD(NOW(), INTERVAL 30 MINUTE))`,
                 [class_id, week, classCode]
             );
         }
 
         // 3. 새로운 출석 기록 저장
+        const statusMap = {
+            '출석': 'present',
+            '지각': 'late',
+            '결석': 'absent',
+            '조퇴': 'early_leave'
+        };
+
         for (const student of students) {
-            await dbPool.query(
-                `INSERT INTO ClassWeekly_Students 
-                 (class_id, week, student_id, attendance_status) 
+            const status = statusMap[student.status] || student.status;
+            await connection.query(
+                `INSERT INTO ClassWeekly_Students
+                     (class_id, week, student_id, attendance_status)
                  VALUES (?, ?, ?, ?)`,
-                [class_id, week, student.id, student.status]
+                [class_id, week, student.id, status]
             );
         }
 
-        res.json({ message: '출석부 저장 성공' });
+        // 모든 처리가 성공하면 트랜잭션 커밋
+        await connection.commit();
+
+        res.json({
+            success: true,
+            message: '출석부가 저장되었습니다.'
+        });
+
     } catch (error) {
+        // 오류 발생 시 롤백
+        await connection.rollback();
+
         console.error('출석부 저장 오류:', error);
         res.status(500).json({
+            success: false,
             message: '출석부 저장 실패',
             error: error.message,
             sqlState: error.sqlState,
             sqlMessage: error.sqlMessage
         });
+    } finally {
+        // 연결 해제
+        connection.release();
     }
 });
 
@@ -482,6 +508,114 @@ app.post('/api/attendance/generate-code', async (req, res) => {
         });
     }
 });
+// newServer.js에 추가
+app.get('/api/notifications/:userId', async (req, res) => {
+    const { userId } = req.params;
+
+    try {
+        const query = `
+            SELECT 
+                n.notification_id,
+                sender.name as sender_name,
+                n.title,
+                n.content,
+                n.is_read,
+                n.created_at,
+                n.sender_id
+            FROM Notifications n
+            JOIN users sender ON n.sender_id = sender.id
+            WHERE n.receiver_id = ?
+            ORDER BY n.created_at DESC`;
+
+        const [notifications] = await dbPool.query(query, [userId]);
+        res.json(notifications);
+    } catch (error) {
+        console.error('알림 조회 오류:', error);
+        res.status(500).json({ message: '알림 목록을 불러오는데 실패했습니다.' });
+    }
+});
+
+// 알림 읽음 처리 API
+app.put('/api/notifications/:notificationId/read', async (req, res) => {
+    const { notificationId } = req.params;
+
+    try {
+        await dbPool.query(
+            'UPDATE Notifications SET is_read = TRUE WHERE notification_id = ?',
+            [notificationId]
+        );
+        res.json({ message: '알림이 읽음 처리되었습니다.' });
+    } catch (error) {
+        console.error('알림 읽음 처리 오류:', error);
+        res.status(500).json({ message: '알림 읽음 처리에 실패했습니다.' });
+    }
+});
+
+// 답장 보내기 API
+app.post('/api/notifications/reply', async (req, res) => {
+    const { senderId, receiverId, title, content } = req.body;
+
+    try {
+        await dbPool.query(
+            `INSERT INTO Notifications 
+             (sender_id, receiver_id, title, content) 
+             VALUES (?, ?, ?, ?)`,
+            [senderId, receiverId, title, content]
+        );
+        res.json({ message: '답장이 전송되었습니다.' });
+    } catch (error) {
+        console.error('답장 전송 오류:', error);
+        res.status(500).json({ message: '답장 전송에 실패했습니다.' });
+    }
+});
+
+// newServer.js에 추가
+// 알림 보내기 API
+app.post('/api/notifications/send', async (req, res) => {
+    const { sender_id, receiver_id, title, content } = req.body;
+
+    try {
+        const [result] = await dbPool.query(
+            `INSERT INTO Notifications 
+             (sender_id, receiver_id, title, content) 
+             VALUES (?, ?, ?, ?)`,
+            [sender_id, receiver_id, title, content]
+        );
+
+        res.json({
+            success: true,
+            message: '알림이 전송되었습니다.',
+            notification_id: result.insertId
+        });
+    } catch (error) {
+        console.error('알림 전송 오류:', error);
+        res.status(500).json({
+            success: false,
+            message: '알림 전송에 실패했습니다.'
+        });
+    }
+});
+
+// 사용자 검색 API
+app.get('/api/users/search', async (req, res) => {
+    const { query } = req.query;
+
+    try {
+        const [users] = await dbPool.query(
+            `SELECT id, name, role 
+             FROM users 
+             WHERE name LIKE ? OR id LIKE ?
+             LIMIT 10`,
+            [`%${query}%`, `%${query}%`]
+        );
+
+        res.json(users);
+    } catch (error) {
+        console.error('사용자 검색 오류:', error);
+        res.status(500).json({ message: '사용자 검색에 실패했습니다.' });
+    }
+});
+
 app.listen(port, () => {
     console.log(`Server running on port ${port}`);
 });
