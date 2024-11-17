@@ -20,20 +20,20 @@ app.use(express.json());
 // });
 
 //은솔
-const dbPool = mysql.createPool({
-    host: process.env.DB_HOST || 'localhost',
-    user: process.env.DB_USER || 'root',
-    password: process.env.DB_PASSWORD || '8421choi@',
-    database: process.env.DB_NAME || 'projsystem',
-});
-
-//건휘
 // const dbPool = mysql.createPool({
 //     host: process.env.DB_HOST || 'localhost',
-//     user: process.env.DB_USER || 'LeeGH04',
-//     password: process.env.DB_PASSWORD || '0004',
-//     database: process.env.DB_NAME || 'Attendance',
+//     user: process.env.DB_USER || 'root',
+//     password: process.env.DB_PASSWORD || '8421choi@',
+//     database: process.env.DB_NAME || 'projsystem',
 // });
+
+//건휘
+const dbPool = mysql.createPool({
+    host: process.env.DB_HOST || 'localhost',
+    user: process.env.DB_USER || 'LeeGH04',
+    password: process.env.DB_PASSWORD || '0004',
+    database: process.env.DB_NAME || 'Attendance',
+});
 
 
 const authenticateToken = (req, res, next) => {
@@ -192,6 +192,196 @@ app.delete('/api/users/:userId', async (req, res) => {
     } catch (error) {
         console.error('사용자 삭제 오류:', error);
         res.status(500).json({ message: '사용자 삭제에 실패했습니다.' });
+    }
+});
+
+
+// =============== 공지사항 관리 API ===============
+/**
+ * @route   GET /api/announcements
+ * @desc    공지사항 목록 조회
+ * @access  Private
+ * @return  {Array} 공지사항 목록
+ */
+app.get('/api/announcements', async (req, res) => {
+    try {
+        const [rows] = await dbPool.query(`
+            SELECT 
+                a.announcement_id,
+                a.title,
+                a.content,
+                a.created_at,
+                a.updated_at,
+                u.name as author_name,
+                u.id as author_id
+            FROM Announcements a
+            JOIN users u ON a.author_id = u.id
+            ORDER BY a.created_at DESC
+        `);
+        res.json(rows);
+    } catch (error) {
+        console.error('공지사항 조회 오류:', error);
+        res.status(500).json({ message: '공지사항 목록을 불러오는데 실패했습니다.' });
+    }
+});
+
+/**
+ * @route   POST /api/announcements
+ * @desc    공지사항 작성
+ * @access  Private (Admin/Professor)
+ * @param   {
+ *   title: string,
+ *   content: string
+ * }
+ */
+app.post('/api/announcements', authenticateToken, async (req, res) => {
+    const { title, content } = req.body;
+    const author_id = req.user.id;
+
+    try {
+        const [result] = await dbPool.query(
+            'INSERT INTO Announcements (title, content, author_id) VALUES (?, ?, ?)',
+            [title, content, author_id]
+        );
+
+        const [newAnnouncement] = await dbPool.query(`
+            SELECT 
+                a.announcement_id,
+                a.title,
+                a.content,
+                a.created_at,
+                u.name as author_name
+            FROM Announcements a
+            JOIN users u ON a.author_id = u.id
+            WHERE a.announcement_id = ?
+        `, [result.insertId]);
+
+        res.status(201).json({
+            success: true,
+            message: '공지사항이 등록되었습니다.',
+            announcement: newAnnouncement[0]
+        });
+    } catch (error) {
+        console.error('공지사항 등록 오류:', error);
+        res.status(500).json({ success: false, message: '공지사항 등록에 실패했습니다.' });
+    }
+});
+
+/**
+ * @route   PUT /api/announcements/:id
+ * @desc    공지사항 수정
+ * @access  Private (Admin/Professor)
+ */
+app.put('/api/announcements/:id', authenticateToken, async (req, res) => {
+    const { id } = req.params;
+    const { title, content } = req.body;
+    const author_id = req.user.id;
+
+    try {
+        const [announcement] = await dbPool.query(
+            'SELECT author_id FROM Announcements WHERE announcement_id = ?',
+            [id]
+        );
+
+        if (!announcement.length) {
+            return res.status(404).json({ message: '공지사항을 찾을 수 없습니다.' });
+        }
+
+        if (announcement[0].author_id !== author_id) {
+            return res.status(403).json({ message: '수정 권한이 없습니다.' });
+        }
+
+        await dbPool.query(
+            'UPDATE Announcements SET title = ?, content = ? WHERE announcement_id = ?',
+            [title, content, id]
+        );
+
+        res.json({ message: '공지사항이 수정되었습니다.' });
+    } catch (error) {
+        console.error('공지사항 수정 오류:', error);
+        res.status(500).json({ message: '공지사항 수정에 실패했습니다.' });
+    }
+});
+
+/**
+ * @route   DELETE /api/announcements/:id
+ * @desc    공지사항 삭제
+ * @access  Private (Admin/Professor)
+ */
+app.delete('/api/announcements/:id', authenticateToken, async (req, res) => {
+    const { id } = req.params;
+    const author_id = req.user.id;
+
+    try {
+        const [announcement] = await dbPool.query(
+            'SELECT author_id FROM Announcements WHERE announcement_id = ?',
+            [id]
+        );
+
+        if (!announcement.length) {
+            return res.status(404).json({ message: '공지사항을 찾을 수 없습니다.' });
+        }
+
+        if (announcement[0].author_id !== author_id) {
+            return res.status(403).json({ message: '삭제 권한이 없습니다.' });
+        }
+
+        await dbPool.query('DELETE FROM Announcements WHERE announcement_id = ?', [id]);
+        res.json({ message: '공지사항이 삭제되었습니다.' });
+    } catch (error) {
+        console.error('공지사항 삭제 오류:', error);
+        res.status(500).json({ message: '공지사항 삭제에 실패했습니다.' });
+    }
+});
+
+/**
+ * @route   GET /api/announcements/search
+ * @desc    공지사항 검색
+ * @access  Private
+ * @query   {
+ *   type: 'title' | 'content' | 'author',
+ *   query: string
+ * }
+ */
+app.get('/api/announcements/search', async (req, res) => {
+    const { type, query } = req.query;
+    let sql = '';
+
+    try {
+        switch(type) {
+            case 'title':
+                sql = `
+                    SELECT a.*, u.name as author_name 
+                    FROM Announcements a 
+                    JOIN users u ON a.author_id = u.id 
+                    WHERE a.title LIKE ?
+                `;
+                break;
+            case 'content':
+                sql = `
+                    SELECT a.*, u.name as author_name 
+                    FROM Announcements a 
+                    JOIN users u ON a.author_id = u.id 
+                    WHERE a.content LIKE ?
+                `;
+                break;
+            case 'author':
+                sql = `
+                    SELECT a.*, u.name as author_name 
+                    FROM Announcements a 
+                    JOIN users u ON a.author_id = u.id 
+                    WHERE u.name LIKE ?
+                `;
+                break;
+            default:
+                return res.status(400).json({ message: '잘못된 검색 유형입니다.' });
+        }
+
+        const [rows] = await dbPool.query(sql, [`%${query}%`]);
+        res.json(rows);
+    } catch (error) {
+        console.error('공지사항 검색 오류:', error);
+        res.status(500).json({ message: '공지사항 검색에 실패했습니다.' });
     }
 });
 
