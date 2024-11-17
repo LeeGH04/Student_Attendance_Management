@@ -20,20 +20,20 @@ app.use(express.json());
 // });
 
 //은솔
-// const dbPool = mysql.createPool({
-//     host: process.env.DB_HOST || 'localhost',
-//     user: process.env.DB_USER || 'root',
-//     password: process.env.DB_PASSWORD || '8421choi@',
-//     database: process.env.DB_NAME || 'projsystem',
-// });
-
-//건휘
 const dbPool = mysql.createPool({
     host: process.env.DB_HOST || 'localhost',
-    user: process.env.DB_USER || 'LeeGH04',
-    password: process.env.DB_PASSWORD || '0004',
-    database: process.env.DB_NAME || 'Attendance',
+    user: process.env.DB_USER || 'root',
+    password: process.env.DB_PASSWORD || '8421choi@',
+    database: process.env.DB_NAME || 'projsystem',
 });
+
+//건휘
+// const dbPool = mysql.createPool({
+//     host: process.env.DB_HOST || 'localhost',
+//     user: process.env.DB_USER || 'LeeGH04',
+//     password: process.env.DB_PASSWORD || '0004',
+//     database: process.env.DB_NAME || 'Attendance',
+// });
 
 
 const authenticateToken = (req, res, next) => {
