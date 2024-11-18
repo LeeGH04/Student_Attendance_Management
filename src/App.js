@@ -16,7 +16,7 @@ import ProfileManagementPage from './components/ProfileManagementPage';
 import UserManagementPage from './components/UserManagementPage';
 
 import './App.css';
-import AttendanceManagementPage from "./components/AttendanceManagementPage";
+
 
 function App() {
     useEffect(() => {
@@ -132,14 +132,7 @@ function App() {
                     }
                 />
 
-                <Route
-                    path="/AttendanceManagementPage"
-                    element={
-                        <PrivateRoute>
-                            <AttendanceManagementPage />
-                        </PrivateRoute>
-                    }
-                />
+
 
 
 

@@ -68,16 +68,75 @@ const AttendanceReportPage = () => {
 
     // 데이터 로드 중
     if (isLoading) {
-        return <div>Loading...</div>;
+        return (
+            <div className="main-container">
+                <div className="content-container">
+                    <h1 className="title">출석 보고서</h1>
+                    <div className={styles.container}>
+                        <div className={styles.leftSection}>
+                            <h2>상세 출결 현황</h2>
+                            <div className={styles.loadingState}>
+                                로딩 중...
+                            </div>
+                        </div>
+                        <div className={styles.rightSection}>
+                            <div className={styles.loadingState}>
+                                로딩 중...
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        );
     }
 
     // 데이터가 없는 경우
     if (!attendanceData.details.length && !attendanceData.summary.length) {
-        return <div>No attendance data available.</div>;
+        return (
+            <div className="main-container">
+                <div className="content-container">
+                    <h1 className="title">출석 보고서</h1>
+                    <div className={styles.container}>
+                        <div className={styles.leftSection}>
+                            <h2>상세 출결 현황</h2>
+                            <table className={styles.attendanceTable}>
+                                <thead>
+                                <tr>
+                                    <th>강의명</th>
+                                    <th>주차</th>
+                                    <th>날짜</th>
+                                    <th>출결상태</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr>
+                                    <td colSpan="4" className={styles.noDataMessage}>
+                                        출결 기록이 없습니다.
+                                    </td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div className={styles.rightSection}>
+                            <div className={styles.chartContainer}>
+                                <h2>전체 출결 현황</h2>
+                                <div className={styles.noDataMessage}>
+                                    출결 데이터가 없습니다.
+                                </div>
+                            </div>
+                            <div className={styles.chartContainer}>
+                                <h2>과목별 출결 현황</h2>
+                                <div className={styles.noDataMessage}>
+                                    출결 데이터가 없습니다.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        );
     }
 
-    // 나머지 JSX 코드...
-    // 나머지 렌더링 코드...
 
     const totalAttendance = attendanceData.summary?.reduce((sum, item) => sum + (item.attendance || 0), 0) || 0;
     const totalTardiness = attendanceData.summary?.reduce((sum, item) => sum + (item.tardiness || 0), 0) || 0;
@@ -131,7 +190,7 @@ const AttendanceReportPage = () => {
                             <tr>
                                 <th>강의명</th>
                                 <th>주차</th>
-                                <th>날짜</th>
+                                {/*<th>날짜</th> 날짜 구현 못하겠음( 다 갈아 엎기 무셔웡~)*/}
                                 <th>출결상태</th>
                             </tr>
                             </thead>
@@ -141,7 +200,7 @@ const AttendanceReportPage = () => {
                                     <tr key={index}>
                                         <td>{item.courseName}</td>
                                         <td>{item.week}주차</td>
-                                        <td>{formatDate(item.date)}</td>
+                                        {/*<td>{formatDate(item.date)}</td>날짜 구현 못하겠음( 다 갈아 엎기 무셔웡~)*/}
                                         <td className={styles[item.attendance_status]}>
                                             {statusMap[item.attendance_status]}
                                         </td>
@@ -159,30 +218,42 @@ const AttendanceReportPage = () => {
                     </div>
 
                     <div className={styles.rightSection}>
-                        {pieData.length > 0 && (
+                        {attendanceData.summary?.length > 0 && (
                             <div className={styles.chartContainer}>
                                 <h2>전체 출결 현황</h2>
-                                <div className={styles.pieChartWrapper}>
-                                    <PieChart width={350} height={250}>
-                                        <Pie
-                                            data={pieData}
-                                            cx={160}
-                                            cy={100}
-                                            innerRadius={60}
-                                            outerRadius={100}
-                                            fill="#8884d8"
-                                            paddingAngle={5}
-                                            dataKey="value"
-                                            label={({name, value, percent}) =>
-                                                `${name}: ${value}회 (${(percent * 100).toFixed(1)}%)`}
-                                        >
-                                            {pieData.map((entry, index) => (
-                                                <Cell key={`cell-${index}`} fill={entry.color}/>
-                                            ))}
-                                        </Pie>
+                                <div className={styles.barChartWrapper}>
+                                    <BarChart
+                                        width={350}
+                                        height={250}
+                                        data={[{
+                                            name: '전체',
+                                            출석: totalAttendance,
+                                            지각: totalTardiness,
+                                            결석: totalAbsence
+                                        }]}
+                                        margin={{top: 20, right: 30, left: 20, bottom: 5}}
+                                    >
+                                        <CartesianGrid strokeDasharray="3 3"/>
+                                        <XAxis dataKey="name"/>
+                                        <YAxis ticks={Array.from({length: Math.max(totalAttendance, totalTardiness, totalAbsence)}, (_, i) => i + 1)}/>
                                         <Tooltip formatter={(value) => `${value}회`}/>
-                                        <Legend />
-                                    </PieChart>
+                                        <Legend/>
+                                        <Bar
+                                            dataKey="출석"
+                                            fill="#4CAF50"
+                                            label={{position: 'top', formatter: (value) => `${value}회`}}
+                                        />
+                                        <Bar
+                                            dataKey="지각"
+                                            fill="#FFC107"
+                                            label={{position: 'top', formatter: (value) => `${value}회`}}
+                                        />
+                                        <Bar
+                                            dataKey="결석"
+                                            fill="#F44336"
+                                            label={{position: 'top', formatter: (value) => `${value}회`}}
+                                        />
+                                    </BarChart>
                                 </div>
                             </div>
                         )}
@@ -195,7 +266,7 @@ const AttendanceReportPage = () => {
                                               margin={{top: 20, right: 30, left: 20, bottom: 5}}>
                                         <CartesianGrid strokeDasharray="3 3"/>
                                         <XAxis dataKey="courseName"/>
-                                        <YAxis/>
+                                        <YAxis ticks={Array.from({length: Math.max(totalAttendance, totalTardiness, totalAbsence)}, (_, i) => i + 1)}/>
                                         <Tooltip formatter={(value) => `${value}회`}/>
                                         <Legend/>
                                         <Bar

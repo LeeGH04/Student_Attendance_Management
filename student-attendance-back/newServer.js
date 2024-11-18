@@ -457,24 +457,38 @@ app.get('/api/attendance/report/student/:studentId', async (req, res) => {
     }
 });
 // 출석 보고서 저장
+/**
+ * @route   POST /api/attendance/report
+ * @desc    출석 보고서 저장 및 결석 알림 처리
+ * @access  Private (Professor)
+ */
 app.post('/api/attendance/report', async (req, res) => {
     const { class_id, week, students, classCode } = req.body;
-
-    // 트랜잭션 시작
     const connection = await dbPool.getConnection();
-    await connection.beginTransaction();
 
     try {
-        // 1. 해당 주차의 모든 출석 기록 삭제
+        // 해당 수업의 교수 ID 가져오기
+        const [classInfo] = await connection.query(
+            'SELECT professor_id, class_name FROM Classes WHERE class_id = ?',
+            [class_id]
+        );
+
+        if (!classInfo.length) {
+            throw new Error('수업 정보를 찾을 수 없습니다.');
+        }
+
+        const professor_id = classInfo[0].professor_id;
+        await connection.beginTransaction();
+
+        // 1. 해당 주차의 출석 기록 삭제
         await connection.query(
             `DELETE FROM ClassWeekly_Students
              WHERE class_id = ? AND week = ?`,
             [class_id, week]
         );
 
-        // 2. 코드가 있는 경우 처리
+        // 2. 출석 코드 처리
         if (classCode) {
-            // 기존 활성 코드 비활성화
             await connection.query(
                 `UPDATE Class_Codes
                  SET is_active = FALSE
@@ -482,59 +496,131 @@ app.post('/api/attendance/report', async (req, res) => {
                 [class_id, week]
             );
 
-            // 새 코드 생성
             await connection.query(
                 `INSERT INTO Class_Codes
-                     (class_id, week, attendance_code, expired_at)
+                 (class_id, week, attendance_code, expired_at)
                  VALUES (?, ?, ?, DATE_ADD(NOW(), INTERVAL 30 MINUTE))`,
                 [class_id, week, classCode]
             );
         }
 
-        // 3. 새로운 출석 기록 저장
-        const statusMap = {
-            '출석': 'present',
-            '지각': 'late',
-            '결석': 'absent',
-            '조퇴': 'early_leave'
-        };
-
-        for (const student of students) {
-            const status = statusMap[student.status] || student.status;
+        // 3. 새로운 출석 기록 저장 및 결석 확인
+        for (const studentData of students) {
+            // 3.1 출석 상태 저장
             await connection.query(
                 `INSERT INTO ClassWeekly_Students
-                     (class_id, week, student_id, attendance_status)
+                 (class_id, week, student_id, attendance_status)
                  VALUES (?, ?, ?, ?)`,
-                [class_id, week, student.id, status]
+                [class_id, week, studentData.id, studentData.status]
             );
+
+            // 3.2 결석인 경우, 누적 결석 횟수 확인
+            if (studentData.status === 'absent') {
+                const [absences] = await connection.query(`
+                    SELECT COUNT(*) as absent_count
+                    FROM ClassWeekly_Students
+                    WHERE class_id = ? 
+                    AND student_id = ?
+                    AND attendance_status = 'absent'`,
+                    [class_id, studentData.id]
+                );
+
+                // 3.3 결석이 3번 이상인 경우 알림 발송
+                if (absences[0].absent_count >= 3) {
+                    // 학생 정보 조회
+                    const [studentInfo] = await connection.query(
+                        'SELECT name FROM users WHERE id = ?',
+                        [studentData.id]
+                    );
+
+                    // 학생에게 알림 발송
+                    await connection.query(`
+                        INSERT INTO Notifications 
+                        (sender_id, receiver_id, title, content)
+                        VALUES (?, ?, ?, ?)`,
+                        [
+                            professor_id,
+                            studentData.id,
+                            '출석 경고',
+                            `${classInfo[0].class_name} 수업에서 결석이 3회 이상 누적되었습니다. 출석 관리에 유의해주세요.`
+                        ]
+                    );
+
+                    // 학부모 정보 조회 및 알림 발송
+                    const [parentInfo] = await connection.query(`
+                        SELECT p.id as parent_id
+                        FROM ParentChild pc
+                        JOIN users p ON pc.parent_id = p.id
+                        WHERE pc.student_id = ?`,
+                        [studentData.id]
+                    );
+
+                    if (parentInfo.length > 0) {
+                        await connection.query(`
+                            INSERT INTO Notifications 
+                            (sender_id, receiver_id, title, content)
+                            VALUES (?, ?, ?, ?)`,
+                            [
+                                professor_id,
+                                parentInfo[0].parent_id,
+                                '자녀 출석 경고',
+                                `자녀(${studentInfo[0].name})의 ${classInfo[0].class_name} 수업 결석이 3회 이상 누적되었습니다.`
+                            ]
+                        );
+                    }
+                }
+            }
         }
 
-        // 모든 처리가 성공하면 트랜잭션 커밋
         await connection.commit();
-
         res.json({
             success: true,
             message: '출석부가 저장되었습니다.'
         });
 
     } catch (error) {
-        // 오류 발생 시 롤백
         await connection.rollback();
-
         console.error('출석부 저장 오류:', error);
         res.status(500).json({
             success: false,
             message: '출석부 저장 실패',
             error: error.message,
-            sqlState: error.sqlState,
-            sqlMessage: error.sqlMessage
+            stack: error.stack
         });
     } finally {
-        // 연결 해제
         connection.release();
     }
 });
 
+app.get('/api/attendance/absence-count/:studentId/:classId', async (req, res) => {
+    const { studentId, classId } = req.params;
+
+    try {
+        const [absences] = await dbPool.query(`
+            SELECT 
+                c.class_name,
+                COUNT(*) as absent_count
+            FROM ClassWeekly_Students cws
+            JOIN Classes c ON c.class_id = cws.class_id
+            WHERE cws.student_id = ? 
+            AND cws.class_id = ?
+            AND cws.attendance_status = 'absent'
+            GROUP BY cws.class_id`,
+            [studentId, classId]
+        );
+
+        res.json({
+            success: true,
+            data: absences[0] || { class_name: '', absent_count: 0 }
+        });
+    } catch (error) {
+        console.error('결석 횟수 조회 오류:', error);
+        res.status(500).json({
+            success: false,
+            message: '결석 횟수 조회에 실패했습니다.'
+        });
+    }
+});
 
 
 // 주차별 출석 현황 조회 API 추가
@@ -778,6 +864,33 @@ app.get('/api/professor/classes/:professorId', async (req, res) => {
     } catch (error) {
         console.error('수업 목록 조회 오류:', error);
         res.status(500).json({ message: '수업 목록 조회 실패' });
+    }
+});
+
+/**
+ * @route   GET /api/timetable/professor/:professorId
+ * @desc    교수의 시간표 조회
+ */
+app.get('/api/timetable/professor/:professorId', async (req, res) => {
+    const { professorId } = req.params;
+
+    try {
+        const query = `
+            SELECT t.*, c.class_name
+            FROM Timetable t
+            JOIN Classes c ON t.class_id = c.class_id
+            WHERE c.professor_id = ?
+            ORDER BY t.day_of_week, t.start_time
+        `;
+
+        const [rows] = await dbPool.query(query, [professorId]);
+        res.json(rows);
+    } catch (error) {
+        console.error('시간표 조회 오류:', error);
+        res.status(500).json({
+            success: false,
+            message: '시간표를 불러오는데 실패했습니다.'
+        });
     }
 });
 

@@ -89,14 +89,7 @@ const SideBar = () => {
                         </li>
                     )}
 
-                    {(role === 'admin' || role === 'professor') && (
-                        <li>
-                            <button onClick={() => navigate('/AttendanceManagementPage')}>
-                                <Home className={styles.icon}/>
-                                <span className={styles.sidebarMenu}>출석 관리</span>
-                            </button>
-                        </li>
-                    )}
+
 
                     {role === 'admin' && (
                         <li>
