@@ -9,8 +9,23 @@ const UserManagementPage = () => {
     const [selectedRole, setSelectedRole] = useState('all');
     const [editingUser, setEditingUser] = useState(null);
     const [message, setMessage] = useState('');
+    const [showCreateModal, setShowCreateModal] = useState(false);
+    const [showParentLinkModal, setShowParentLinkModal] = useState(false);
+    const [newUser, setNewUser] = useState({
+        id: '',
+        name: '',
+        password: '',
+        email: '',
+        phone_number: '',
+        role: 'student'
+    });
+    const [parentLinkData, setParentLinkData] = useState({
+        studentId: '',
+        parentId: ''
+    });
+    const [availableStudents, setAvailableStudents] = useState([]);
+    const [availableParents, setAvailableParents] = useState([]);
 
-    // 사용자 목록 가져오기
     useEffect(() => {
         fetchUsers();
     }, []);
@@ -19,9 +34,58 @@ const UserManagementPage = () => {
         try {
             const response = await axios.get('http://localhost:5002/api/users');
             setUsers(response.data);
+
+            // 학생과 부모 목록 필터링
+            setAvailableStudents(response.data.filter(user => user.role === 'student'));
+            setAvailableParents(response.data.filter(user => user.role === 'parent'));
         } catch (error) {
             setMessage('사용자 목록을 불러오는데 실패했습니다.');
             console.error('사용자 조회 실패:', error);
+        }
+    };
+
+    const handleCreateUser = async () => {
+        try {
+            if (!newUser.id || !newUser.name || !newUser.password) {
+                setMessage('필수 정보를 모두 입력해주세요.');
+                return;
+            }
+
+            await axios.post('http://localhost:5002/api/users', newUser);
+            setMessage('사용자가 생성되었습니다.');
+            setShowCreateModal(false);
+            setNewUser({
+                id: '',
+                name: '',
+                password: '',
+                email: '',
+                phone_number: '',
+                role: 'student'
+            });
+            fetchUsers();
+        } catch (error) {
+            setMessage('사용자 생성에 실패했습니다.');
+            console.error('사용자 생성 실패:', error);
+        }
+    };
+
+    const handleLinkParentStudent = async () => {
+        try {
+            if (!parentLinkData.studentId || !parentLinkData.parentId) {
+                setMessage('학생과 부모를 모두 선택해주세요.');
+                return;
+            }
+
+            await axios.post('http://localhost:5002/api/parent-child', parentLinkData);
+            setMessage('학생과 부모가 연결되었습니다.');
+            setShowParentLinkModal(false);
+            setParentLinkData({
+                studentId: '',
+                parentId: ''
+            });
+        } catch (error) {
+            setMessage('학생-부모 연결에 실패했습니다.');
+            console.error('학생-부모 연결 실패:', error);
         }
     };
 
@@ -71,7 +135,23 @@ const UserManagementPage = () => {
     return (
         <div className="main-container">
             <div className="content-container">
-                <h1 className="title">사용자 관리</h1>
+                <div className={styles.header}>
+                    <h1 className="title">사용자 관리</h1>
+                    <div className={styles.actionButtons}>
+                        <button
+                            className={styles.createButton}
+                            onClick={() => setShowCreateModal(true)}
+                        >
+                            새 사용자 생성
+                        </button>
+                        <button
+                            className={styles.linkButton}
+                            onClick={() => setShowParentLinkModal(true)}
+                        >
+                            학생-부모 연결
+                        </button>
+                    </div>
+                </div>
 
                 {message && (
                     <div className={styles.message}>
@@ -101,6 +181,7 @@ const UserManagementPage = () => {
                         </select>
                     </div>
                 </div>
+
 
                 <table className={styles.userTable}>
                     <thead>
@@ -139,7 +220,135 @@ const UserManagementPage = () => {
                     ))}
                     </tbody>
                 </table>
-
+                {showCreateModal && (
+                    <div className={styles.modal}>
+                        <div className={styles.modalContent}>
+                            <h2>새 사용자 생성</h2>
+                            <div className={styles.inputGroup}>
+                                <label>학번/교번:</label>
+                                <input
+                                    type="text"
+                                    value={newUser.id}
+                                    onChange={(e) => setNewUser({
+                                        ...newUser,
+                                        id: e.target.value
+                                    })}
+                                    required
+                                />
+                            </div>
+                            <div className={styles.inputGroup}>
+                                <label>이름:</label>
+                                <input
+                                    type="text"
+                                    value={newUser.name}
+                                    onChange={(e) => setNewUser({
+                                        ...newUser,
+                                        name: e.target.value
+                                    })}
+                                    required
+                                />
+                            </div>
+                            <div className={styles.inputGroup}>
+                                <label>비밀번호:</label>
+                                <input
+                                    type="password"
+                                    value={newUser.password}
+                                    onChange={(e) => setNewUser({
+                                        ...newUser,
+                                        password: e.target.value
+                                    })}
+                                    required
+                                />
+                            </div>
+                            <div className={styles.inputGroup}>
+                                <label>이메일:</label>
+                                <input
+                                    type="email"
+                                    value={newUser.email}
+                                    onChange={(e) => setNewUser({
+                                        ...newUser,
+                                        email: e.target.value
+                                    })}
+                                />
+                            </div>
+                            <div className={styles.inputGroup}>
+                                <label>전화번호:</label>
+                                <input
+                                    type="tel"
+                                    value={newUser.phone_number}
+                                    onChange={(e) => setNewUser({
+                                        ...newUser,
+                                        phone_number: e.target.value
+                                    })}
+                                />
+                            </div>
+                            <div className={styles.inputGroup}>
+                                <label>역할:</label>
+                                <select
+                                    value={newUser.role}
+                                    onChange={(e) => setNewUser({
+                                        ...newUser,
+                                        role: e.target.value
+                                    })}
+                                >
+                                    <option value="student">학생</option>
+                                    <option value="professor">교수</option>
+                                    <option value="admin">관리자</option>
+                                    <option value="parent">학부모</option>
+                                </select>
+                            </div>
+                            <div className={styles.modalButtons}>
+                                <button onClick={handleCreateUser}>생성</button>
+                                <button onClick={() => setShowCreateModal(false)}>취소</button>
+                            </div>
+                        </div>
+                    </div>
+                )}
+                {showParentLinkModal && (
+                    <div className={styles.modal}>
+                        <div className={styles.modalContent}>
+                            <h2>학생-부모 연결</h2>
+                            <div className={styles.inputGroup}>
+                                <label>학생:</label>
+                                <select
+                                    value={parentLinkData.studentId}
+                                    onChange={(e) => setParentLinkData({
+                                        ...parentLinkData,
+                                        studentId: e.target.value
+                                    })}
+                                >
+                                    <option value="">학생 선택</option>
+                                    {availableStudents.map(student => (
+                                        <option key={student.id} value={student.id}>
+                                            {student.name} ({student.id})
+                                        </option>
+                                    ))}
+                                </select>
+                            </div>
+                            <div className={styles.inputGroup}>
+                                <label>학부모:</label>
+                                <select
+                                    value={parentLinkData.parentId}
+                                    onChange={(e) => setParentLinkData({
+                                        ...parentLinkData,
+                                        parentId: e.target.value
+                                    })}
+                                >
+                                    <option value="">학부모 선택</option>
+                                    {availableParents.map(parent => (
+                                        <option key={parent.id} value={parent.id}>
+                                            {parent.name} ({parent.id})
+                                        </option>
+                                    ))}
+                                </select>
+                            </div>
+                            <div className={styles.modalButtons}>
+                                <button onClick={handleLinkParentStudent}>연결</button>
+                                <button onClick={() => setShowParentLinkModal(false)}>취소</button>
+                            </div>
+                        </div>
+                    </div>
+                )}
                 {editingUser && (
                     <div className={styles.modal}>
                         <div className={styles.modalContent}>

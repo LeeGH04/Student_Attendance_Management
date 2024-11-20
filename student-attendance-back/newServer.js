@@ -1029,6 +1029,192 @@ app.get('/api/parent/children/:parentId', async (req, res) => {
     }
 });
 
+
+// =============== 사용자 관리에 새로 추가한 API ===============
+
+
+// 새 사용자 생성 API
+app.post('/api/users', async (req, res) => {
+    const { id, name, password, email, phone_number, role } = req.body;
+
+    try {
+        // 필수 필드 확인
+        if (!id || !name || !password || !role) {
+            return res.status(400).json({
+                success: false,
+                message: '필수 정보가 누락되었습니다.'
+            });
+        }
+
+        // 사용자 ID 중복 확인
+        const [existingUser] = await dbPool.query(
+            'SELECT * FROM users WHERE id = ?',
+            [id]
+        );
+
+        if (existingUser.length > 0) {
+            return res.status(400).json({
+                success: false,
+                message: '이미 존재하는 ID입니다.'
+            });
+        }
+
+        // 새 사용자 생성
+        const [result] = await dbPool.query(
+            `INSERT INTO users (id, name, password, email, phone_number, role)
+             VALUES (?, ?, ?, ?, ?, ?)`,
+            [id, name, password, email, phone_number, role]
+        );
+
+        res.status(201).json({
+            success: true,
+            message: '사용자가 생성되었습니다.',
+            userId: result.insertId
+        });
+
+    } catch (error) {
+        console.error('사용자 생성 오류:', error);
+        res.status(500).json({
+            success: false,
+            message: '사용자 생성 중 오류가 발생했습니다.'
+        });
+    }
+});
+
+// 학생-부모 연결 API
+app.post('/api/parent-child', async (req, res) => {
+    const { studentId, parentId } = req.body;
+    const connection = await dbPool.getConnection();
+
+    try {
+        await connection.beginTransaction();
+
+        // 학생과 부모가 존재하는지 확인
+        const [student] = await connection.query(
+            'SELECT * FROM users WHERE id = ? AND role = ?',
+            [studentId, 'student']
+        );
+
+        const [parent] = await connection.query(
+            'SELECT * FROM users WHERE id = ? AND role = ?',
+            [parentId, 'parent']
+        );
+
+        if (student.length === 0) {
+            throw new Error('존재하지 않는 학생입니다.');
+        }
+
+        if (parent.length === 0) {
+            throw new Error('존재하지 않는 학부모입니다.');
+        }
+
+        // 이미 연결되어 있는지 확인
+        const [existing] = await connection.query(
+            'SELECT * FROM ParentChild WHERE parent_id = ? AND student_id = ?',
+            [parentId, studentId]
+        );
+
+        if (existing.length > 0) {
+            throw new Error('이미 연결된 관계입니다.');
+        }
+
+        // 연결 생성
+        await connection.query(
+            'INSERT INTO ParentChild (parent_id, student_id) VALUES (?, ?)',
+            [parentId, studentId]
+        );
+
+        await connection.commit();
+
+        res.json({
+            success: true,
+            message: '학생과 부모가 성공적으로 연결되었습니다.'
+        });
+
+    } catch (error) {
+        await connection.rollback();
+        console.error('학생-부모 연결 오류:', error);
+        res.status(400).json({
+            success: false,
+            message: error.message || '학생-부모 연결 중 오류가 발생했습니다.'
+        });
+    } finally {
+        connection.release();
+    }
+});
+
+// 학생의 부모 조회 API
+app.get('/api/parent-child/student/:studentId', async (req, res) => {
+    const { studentId } = req.params;
+
+    try {
+        const [parents] = await dbPool.query(`
+            SELECT u.* 
+            FROM users u
+            JOIN ParentChild pc ON u.id = pc.parent_id
+            WHERE pc.student_id = ?`,
+            [studentId]
+        );
+
+        res.json(parents);
+
+    } catch (error) {
+        console.error('부모 조회 오류:', error);
+        res.status(500).json({
+            success: false,
+            message: '부모 정보 조회 중 오류가 발생했습니다.'
+        });
+    }
+});
+
+// 부모의 학생 조회 API
+app.get('/api/parent-child/parent/:parentId', async (req, res) => {
+    const { parentId } = req.params;
+
+    try {
+        const [students] = await dbPool.query(`
+            SELECT u.* 
+            FROM users u
+            JOIN ParentChild pc ON u.id = pc.student_id
+            WHERE pc.parent_id = ?`,
+            [parentId]
+        );
+
+        res.json(students);
+
+    } catch (error) {
+        console.error('학생 조회 오류:', error);
+        res.status(500).json({
+            success: false,
+            message: '학생 정보 조회 중 오류가 발생했습니다.'
+        });
+    }
+});
+
+// 학생-부모 연결 해제 API
+app.delete('/api/parent-child', async (req, res) => {
+    const { studentId, parentId } = req.body;
+
+    try {
+        await dbPool.query(
+            'DELETE FROM ParentChild WHERE parent_id = ? AND student_id = ?',
+            [parentId, studentId]
+        );
+
+        res.json({
+            success: true,
+            message: '연결이 해제되었습니다.'
+        });
+
+    } catch (error) {
+        console.error('연결 해제 오류:', error);
+        res.status(500).json({
+            success: false,
+            message: '연결 해제 중 오류가 발생했습니다.'
+        });
+    }
+});
+
 app.listen(port, () => {
     console.log(`Server running on port ${port}`);
 });
