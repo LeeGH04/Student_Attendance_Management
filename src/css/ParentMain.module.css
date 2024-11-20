@@ -1,49 +1,94 @@
-/* ProfessorMain.module.css */
-
-/* 통계 및 차트 영역 */
-.statisticsContainer {
-    display: flex;
-    gap: 20px;
-    margin-top: 20px;
-}
-
-.attendanceStatus,
-.totalAttendance,
-.notice {
-    width: 30%;
-    padding: 20px;
-    background: white;
-    border-radius: 10px;
-    border: 2px solid black;
-    text-align: center;
-}
-
-/* 시간표 영역 */
-.timetable {
-    margin-top: 20px;
-}
-
-.timetableContent {
-    width: 100%;
-    height: 400px;
-    background: white;
-    border: 2px solid black;
-    border-radius: 10px;
-}
-
-/* 기타 컴포넌트 클래스들 */
 .header {
-    /* 헤더 스타일 */
+    margin-bottom: 2rem;
 }
 
-.barLineChart {
-    /* 막대/선 차트 스타일 */
+.statisticsContainer {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 2rem;
+    margin-bottom: 2rem;
 }
 
-.pieChart {
-    /* 원형 차트 스타일 */
+.card {
+    background: white;
+    border-radius: 8px;
+    padding: 1.5rem;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    height: fit-content;
 }
 
-.noticeContent {
-    /* 공지사항 내용 스타일 */
+.card h2 {
+    margin-top: 0;
+    margin-bottom: 1.5rem;
+    font-size: 1.25rem;
+    color: #333;
+}
+
+.progressWrapper {
+    margin-top: 2rem;
+}
+
+.progressBar {
+    width: 100%;
+    height: 24px;
+    background-color: #e0e0e0;
+    border-radius: 12px;
+    overflow: hidden;
+    margin: 1rem 0;
+}
+
+.progressFill {
+    height: 100%;
+    background-color: #4CAF50;
+    transition: width 0.3s ease;
+}
+
+.progressText {
+    text-align: center;
+    color: #666;
+    font-size: 1rem;
+    margin-top: 1rem;
+}
+
+.chartContainer {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 1rem;
+}
+
+.timetableGrid {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 1rem;
+}
+
+
+.timetableGrid th {
+    background-color: #f5f5f5;
+    font-weight: 600;
+}
+
+.class {
+    background-color: #e3f2fd;
+    padding: 0.75rem;
+    border-radius: 4px;
+    font-size: 0.9rem;
+    line-height: 1.4;
+}
+.timetableGrid {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+    table-layout: fixed; /* 모든 열을 동일한 너비로 설정 */
+}
+
+.timetableGrid th,
+.timetableGrid td {
+    border: 1px solid #ddd;
+    padding: 10px;
+    text-align: center;
+    width: calc(100% / 6); /* 6개 열(교시 + 5일)을 동일하게 나눔 */
+    height: 80px; /* 모든 셀의 높이를 동일하게 설정 */
 }
